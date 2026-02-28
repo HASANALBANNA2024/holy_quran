@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holy_quran/logics/quran_search.dart';
 import 'package:holy_quran/screens/main_drawer.dart';
 import 'package:provider/provider.dart';
 import 'package:holy_quran/themes/theme_provider.dart';
@@ -66,11 +67,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           centerTitle: true,
+
+          // Search Icon Functional Working
           actions: [
             IconButton(
-              icon: const Icon(Icons.search, color: Colors.white),
+              icon: const Icon(Icons.search, color: Colors.white70),
               onPressed: () {
-
+                 showSearch(context: context, delegate: QuranSearch());
               },
             ),
           ],
