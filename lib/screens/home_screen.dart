@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
-import 'dart:convert'; // JSON decoding এর জন্য
+import 'package:holy_quran/screens/main_drawer.dart';
+import 'package:provider/provider.dart';
+import 'package:holy_quran/themes/theme_provider.dart';
+import 'dart:convert';
+import 'package:holy_quran/font/fonts_style.dart';
+import 'package:holy_quran/screens/surah_detail_screen.dart';
+
+import 'package:holy_quran/screens/surah_detail_screen.dart'; // JSON decoding এর জন্য
 // import 'package:http/http.dart' as http; // TODO: pubspec.yaml এ http এড করে এটা আনকমেন্ট করবেন
 
 class HomeScreen extends StatefulWidget {
@@ -43,18 +50,17 @@ class _HomeScreenState extends State<HomeScreen> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        // backgroundColor: Colors.white,
+
+        drawer: const MainDrawer(),
+
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.green,
           elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.menu, color: Colors.grey),
-            onPressed: () {},
-          ),
           title: const Text(
             "AL-QURAN",
             style: TextStyle(
-              color: Color(0xFF1B5E20),
+              color: Colors.white,
               fontWeight: FontWeight.bold,
               letterSpacing: 2,
             ),
@@ -62,10 +68,19 @@ class _HomeScreenState extends State<HomeScreen> {
           centerTitle: true,
           actions: [
             IconButton(
-              icon: const Icon(Icons.search, color: Colors.grey),
-              onPressed: () {},
+              icon: const Icon(Icons.search, color: Colors.white),
+              onPressed: () {
+
+              },
             ),
           ],
+          leading: Builder(
+            builder: (context){
+              return IconButton(onPressed: (){
+                Scaffold.of(context).openDrawer();
+              }, icon: Icon(Icons.menu,color: Colors.white,));
+            },
+          ),
         ),
         body: NestedScrollView(
           headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -77,15 +92,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 10),
-                      Text("Assalamu Alaikum",
-                          style: TextStyle(fontSize: 16, color: Colors.grey[600],)),
+                      Center(
+                        child: Text("Assalamu Alaikum",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 16, color: Colors.grey[600],)),
+                      ),
                       const SizedBox(height: 5),
-                      const Text(
-                        "Learn Quran Every Day",
-                        style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1B5E20)),
+                      Center(
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          "Learn Quran Every Day",
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1B5E20)),
+                        ),
                       ),
                       const SizedBox(height: 20),
                       _buildLastReadCard(),
@@ -152,6 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
           itemBuilder: (context, index) {
             final surah = surahs[index];
             return ListTile(
+
               contentPadding: EdgeInsets.zero,
               leading: Container(
                 height: 40, width: 40,
@@ -171,10 +193,17 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               trailing: Text(
                 surah['name'],
-                style: const TextStyle(color: Color(0xFF1B5E20), fontSize: 20, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  color: Color(0xFF1B5E20),
+                  fontSize: 22,
+                  fontWeight: FontWeight.normal, // আরবি ফন্টে বোল্ড না দিলেও সুন্দর লাগে
+                  fontFamily: 'QuranFont',       // আপনার pubspec.yaml এ দেওয়া নাম
+                ),
               ),
               onTap: () {
                 // এখানে ক্লিক করলে সূরার ডিটেইলস পেজে যাবে
+                Navigator.push(context, MaterialPageRoute(builder:
+                (_) => SurahDetailScreen(surah: surah)));
               },
             );
           },
@@ -216,8 +245,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                const Text("Al-Fatihah",
-                    style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Al-Fatihah",
+                        style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+                    const Text("الفاتحة", // এখানে আরবি নাম
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontFamily: 'QuranFont', // নতুন ফন্ট
+                        )),
+                  ],
+                ),
                 const Text("Ayah No: 1", style: TextStyle(color: Colors.white70)),
               ],
             ),
@@ -260,11 +300,14 @@ class _HomeScreenState extends State<HomeScreen> {
           trailing: const Icon(Icons.chevron_right),
           onTap: () {},
         ),
+        // Settings এর SwitchListTile টি এভাবে পরিবর্তন করুন
         SwitchListTile(
           secondary: const Icon(Icons.dark_mode, color: Colors.green),
           title: const Text("Dark Mode"),
-          value: false,
-          onChanged: (v) {},
+          value: Provider.of<ThemeProvider>(context).isDarkMode,
+          onChanged: (value) {
+            Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+          },
         ),
       ],
     );

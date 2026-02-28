@@ -60,8 +60,9 @@ class _SplashScreenState extends State<SplashScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Image.asset(
                       "assets/images/bismillah.png",
-                      width: size.width * 0.6,
+                      width: size.width * 0.5,
                       fit: BoxFit.contain,
+                      // color: Colors.white.withOpacity(0.6),
                       errorBuilder: (context, error, stackTrace) => const Text(
                         "﷽",
                         style: TextStyle(color: Colors.white, fontSize: 50),
