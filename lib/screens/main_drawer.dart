@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:holy_quran/screens/bookmark_screen.dart';
+import 'package:holy_quran/screens/prayer_screen.dart';
+// import 'package:holy_quran/screens/qibla_screen.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
@@ -36,9 +38,21 @@ class MainDrawer extends StatelessWidget {
             // }),
             _buildDrawerItem(context, Icons.explore_rounded, "Qibla Direction", () {
               Navigator.pop(context);
+
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) =>const QiblaScreen()),
+              // );
             }),
             _buildDrawerItem(context, Icons.access_time_filled_rounded, "Prayer Times", () {
               Navigator.pop(context);
+
+              // call to prayer screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PrayerScreen()),
+              );
+
             }),
 
             const Divider(color: Colors.grey, indent: 20, endIndent: 20),
