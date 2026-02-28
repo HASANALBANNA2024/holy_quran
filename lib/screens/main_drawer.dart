@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:holy_quran/screens/bookmark_screen.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
@@ -20,7 +21,15 @@ class MainDrawer extends StatelessWidget {
             // ২. ড্রয়ার আইটেমগুলো
             _buildDrawerItem(context, Icons.bookmark_rounded, "Bookmarks", () {
               Navigator.pop(context); // ড্রয়ার বন্ধ হবে
-              // TODO: বুকমার্ক স্ক্রিনে যাওয়ার লজিক
+              // TODO: bookmark logic call
+              // open to bookmar screen
+              // ড্রয়ার বন্ধ হবে
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const BookmarksScreen()),
+              );
+
+
             }),
             // _buildDrawerItem(context, Icons.history_rounded, "Last Read", () {
             //   Navigator.pop(context);

@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:holy_quran/providers/bookmark_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:holy_quran/screens/splash_screen.dart';
 import 'package:holy_quran/themes/theme_provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => ThemeProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProvider(create: (context) => BookmarkProvider()),
+      ],
       child: const MyApp(),
     ),
   );

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:holy_quran/providers/bookmark_provider.dart';
 import 'dart:convert'; // JSON decoding এর জন্য এটি লাগবে
 // import 'package:http/http.dart' as http; // TODO: pubspec.yaml এ http এড করে এটি আনকমেন্ট করবেন
 
@@ -164,6 +166,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
     );
   }
 
+  // Ayah Item code and details feature
   Widget _buildAyahItem(Map<String, dynamic> ayah) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -187,7 +190,33 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
               const SizedBox(width: 15),
               const Icon(Icons.play_arrow_outlined, color: Color(0xFF1B5E20), size: 24),
               const SizedBox(width: 15),
-              const Icon(Icons.bookmark_border_outlined, color: Color(0xFF1B5E20), size: 20),
+              // bookmark
+              // const Icon(Icons.bookmark_border_outlined, color: Color(0xFF1B5E20), size: 20),
+
+              // IconButton দিয়ে রিপ্লেস করুন
+              Consumer<BookmarkProvider>(
+                builder: (context, bookmarkProvider, child) {
+                  bool bookmarked = bookmarkProvider.isBookmarked(ayah['number']);
+
+                  return IconButton(
+                    icon: Icon(
+                      bookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                      color: const Color(0xFF1B5E20),
+                      size: 24,
+                    ),
+                    onPressed: () {
+                      bookmarkProvider.toggleBookmark(ayah);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(bookmarked ? "Removed from Bookmarks" : "Saved to Bookmarks"),
+                          duration: const Duration(seconds: 1),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+
             ],
           ),
         ),
