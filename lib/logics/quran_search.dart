@@ -6,9 +6,7 @@ class QuranSearch extends SearchDelegate {
     {"name": "Al-Fatihah", "type": "Surah", "id": 1},
     {"name": "Al-Baqarah", "type": "Surah", "id": 2},
     {"name": "Ya-Sin", "type": "Surah", "id": 36},
-    {"name": "Tasbih Counter", "type": "Tool", "id": "tasbih"},
     {"name": "Prayer Times", "type": "Tool", "id": "prayer"},
-    {"name": "Asma-ul-Husna", "type": "Names", "id": 99},
   ];
 
   @override
