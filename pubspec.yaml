@@ -12,17 +12,26 @@ environment:
 
 
 dependencies:
-  adhan: ^2.0.0+1
-  geolocator: ^10.1.0
-  intl: ^0.19.0 # সময় ফরম্যাট করার জন্য
   flutter:
     sdk: flutter
-  share_plus: ^10.1.4
 
+  # কোর ফাংশনালিটি
+  adhan: ^2.0.0+1
+  geolocator: ^10.1.0
+  intl: ^0.19.0
+  http: ^1.2.0
 
+  # লোকাল ডাটাবেস ও স্টোরেজ
+  sqflite: ^2.3.0
+  path: ^1.8.3
+  shared_preferences: ^2.2.2  # এখানে অতিরিক্ত টেক্সট সরানো হয়েছে
 
+  # অডিও এবং স্টেট ম্যানেজমেন্ট
+  just_audio: ^0.9.36
   provider: ^6.1.1
-  shared_preferences: ^2.2.2
+
+  # শেয়ারিং ফিচার
+  share_plus: ^10.1.4
 
 
 
