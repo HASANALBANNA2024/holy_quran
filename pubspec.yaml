@@ -17,6 +17,7 @@ dependencies:
   intl: ^0.19.0 # সময় ফরম্যাট করার জন্য
   flutter:
     sdk: flutter
+  share_plus: ^10.1.4
 
 
 

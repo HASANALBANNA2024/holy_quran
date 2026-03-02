@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:holy_quran/logics/quran_search.dart';
 import 'package:holy_quran/screens/main_drawer.dart';
-import 'package:provider/provider.dart';
-import 'package:holy_quran/themes/theme_provider.dart';
-import 'dart:convert';
-import 'package:holy_quran/font/fonts_style.dart';
 import 'package:holy_quran/screens/surah_detail_screen.dart';
-
-import 'package:holy_quran/screens/surah_detail_screen.dart'; // JSON decoding এর জন্য
+import 'package:holy_quran/themes/theme_provider.dart';
+import 'package:provider/provider.dart';
 // import 'package:http/http.dart' as http; // TODO: pubspec.yaml এ http এড করে এটা আনকমেন্ট করবেন
 
 class HomeScreen extends StatefulWidget {
@@ -18,7 +14,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   // ---------------------------------------------------------
   // 🔹 API Section: সূরার লিস্ট ফেচ করার ফাংশন
   // ---------------------------------------------------------
@@ -37,13 +32,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // আপাতত টেস্ট করার জন্য ২ সেকেন্ড ডিলে দিয়ে ডামি ডাটা রিটার্ন করছি
     await Future.delayed(const Duration(seconds: 2));
-    return List.generate(114, (index) => {
-      "number": index + 1,
-      "englishName": "Surah Name ${index + 1}",
-      "revelationType": index % 2 == 0 ? "Meccan" : "Medinan",
-      "numberOfAyahs": 7,
-      "name": "سورة"
-    });
+    return List.generate(
+      114,
+      (index) => {
+        "number": index + 1,
+        "englishName": "Surah Name ${index + 1}",
+        "revelationType": index % 2 == 0 ? "Meccan" : "Medinan",
+        "numberOfAyahs": 7,
+        "name": "سورة",
+      },
+    );
   }
 
   @override
@@ -52,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
       length: 3,
       child: Scaffold(
         // backgroundColor: Colors.white,
-
         drawer: const MainDrawer(),
 
         appBar: AppBar(
@@ -73,15 +70,18 @@ class _HomeScreenState extends State<HomeScreen> {
             IconButton(
               icon: const Icon(Icons.search, color: Colors.white70),
               onPressed: () {
-                 showSearch(context: context, delegate: QuranSearch());
+                showSearch(context: context, delegate: QuranSearch());
               },
             ),
           ],
           leading: Builder(
-            builder: (context){
-              return IconButton(onPressed: (){
-                Scaffold.of(context).openDrawer();
-              }, icon: Icon(Icons.menu,color: Colors.white,));
+            builder: (context) {
+              return IconButton(
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                icon: Icon(Icons.menu, color: Colors.white),
+              );
             },
           ),
         ),
@@ -96,9 +96,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       const SizedBox(height: 10),
                       Center(
-                        child: Text("Assalamu Alaikum",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 16, color: Colors.grey[600],)),
+                        child: Text(
+                          "Assalamu Alaikum",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 5),
                       Center(
@@ -106,9 +111,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           textAlign: TextAlign.center,
                           "Learn Quran Every Day",
                           style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1B5E20)),
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1B5E20),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -172,24 +178,33 @@ class _HomeScreenState extends State<HomeScreen> {
         return ListView.separated(
           padding: const EdgeInsets.all(20),
           itemCount: surahs.length,
-          separatorBuilder: (context, index) => Divider(color: Colors.grey[200]),
+          separatorBuilder: (context, index) =>
+              Divider(color: Colors.grey[200]),
           itemBuilder: (context, index) {
             final surah = surahs[index];
             return ListTile(
-
               contentPadding: EdgeInsets.zero,
               leading: Container(
-                height: 40, width: 40,
+                height: 40,
+                width: 40,
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
-                      image: NetworkImage("https://img.icons8.com/ios/50/2e7d32/star--v1.png"),
-                      opacity: 0.3
+                    image: NetworkImage(
+                      "https://img.icons8.com/ios/50/2e7d32/star--v1.png",
+                    ),
+                    opacity: 0.3,
                   ),
                 ),
-                child: Text("${surah['number']}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                child: Text(
+                  "${surah['number']}",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
-              title: Text(surah['englishName'], style: const TextStyle(fontWeight: FontWeight.bold)),
+              title: Text(
+                surah['englishName'],
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               subtitle: Text(
                 "${surah['revelationType'].toUpperCase()} • ${surah['numberOfAyahs']} VERSES",
                 style: const TextStyle(fontSize: 12),
@@ -199,14 +214,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: const TextStyle(
                   color: Color(0xFF1B5E20),
                   fontSize: 22,
-                  fontWeight: FontWeight.normal, // আরবি ফন্টে বোল্ড না দিলেও সুন্দর লাগে
-                  fontFamily: 'QuranFont',       // আপনার pubspec.yaml এ দেওয়া নাম
+                  fontWeight: FontWeight
+                      .normal, // আরবি ফন্টে বোল্ড না দিলেও সুন্দর লাগে
+                  fontFamily: 'QuranFont', // আপনার pubspec.yaml এ দেওয়া নাম
                 ),
               ),
               onTap: () {
                 // এখানে ক্লিক করলে সূরার ডিটেইলস পেজে যাবে
-                Navigator.push(context, MaterialPageRoute(builder:
-                (_) => SurahDetailScreen(surah: surah)));
+                // Navigator.push(context, MaterialPageRoute(builder:
+                // (_) => SurahDetailScreen(surah: sname)));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => SurahDetailScreen(
+                      surah: surah, // এখানে পুরো সূরার ডাটা (Map/Object) যাচ্ছে
+                      surahName:
+                          surah['englishName'] ??
+                          surah['name'] ??
+                          "Surah", // এখানে শুধু নাম (String) যাচ্ছে
+                    ),
+                  ),
+                );
               },
             );
           },
@@ -231,8 +259,13 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Stack(
         children: [
           Positioned(
-            right: -20, bottom: -20,
-            child: Icon(Icons.menu_book, size: 150, color: Colors.white.withOpacity(0.1)),
+            right: -20,
+            bottom: -20,
+            child: Icon(
+              Icons.menu_book,
+              size: 150,
+              color: Colors.white.withOpacity(0.1),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(20),
@@ -251,17 +284,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text("Al-Fatihah",
-                        style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
-                    const Text("الفاتحة", // এখানে আরবি নাম
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontFamily: 'QuranFont', // নতুন ফন্ট
-                        )),
+                    const Text(
+                      "Al-Fatihah",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Text(
+                      "الفاتحة", // এখানে আরবি নাম
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontFamily: 'QuranFont', // নতুন ফন্ট
+                      ),
+                    ),
                   ],
                 ),
-                const Text("Ayah No: 1", style: TextStyle(color: Colors.white70)),
+                const Text(
+                  "Ayah No: 1",
+                  style: TextStyle(color: Colors.white70),
+                ),
               ],
             ),
           ),
@@ -276,7 +320,10 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.all(20),
       itemCount: 30,
       itemBuilder: (context, index) => ListTile(
-        leading: CircleAvatar(backgroundColor: Colors.green[50], child: Text("${index+1}")),
+        leading: CircleAvatar(
+          backgroundColor: Colors.green[50],
+          child: Text("${index + 1}"),
+        ),
         title: Text("Juz ${index + 1}"),
         subtitle: const Text("Starts from Surah details..."),
         trailing: const Icon(Icons.arrow_forward_ios, size: 14),
@@ -289,7 +336,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        const Text("Preferences", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        const Text(
+          "Preferences",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
         const SizedBox(height: 10),
         ListTile(
           leading: const Icon(Icons.language, color: Colors.green),
@@ -322,15 +372,20 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   _SliverAppBarDelegate(this._tabBar);
   final TabBar _tabBar;
 
-  @override double get minExtent => _tabBar.preferredSize.height;
-  @override double get maxExtent => _tabBar.preferredSize.height;
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      color: Colors.white,
-      child: _tabBar,
-    );
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Container(color: Colors.white, child: _tabBar);
   }
-  @override bool shouldRebuild(_SliverAppBarDelegate oldDelegate) => false;
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) => false;
 }

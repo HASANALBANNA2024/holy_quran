@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:holy_quran/logics/share_logic.dart';
 import 'package:holy_quran/providers/bookmark_provider.dart';
-import 'dart:convert'; // JSON decoding এর জন্য এটি লাগবে
+import 'package:provider/provider.dart';
 // import 'package:http/http.dart' as http; // TODO: pubspec.yaml এ http এড করে এটি আনকমেন্ট করবেন
 
 class SurahDetailScreen extends StatefulWidget {
+  final String surahName;
   final Map<String, dynamic> surah;
 
-  const SurahDetailScreen({super.key, required this.surah});
+  const SurahDetailScreen({
+    super.key,
+    required this.surah,
+    required this.surahName,
+  });
 
   @override
   State<SurahDetailScreen> createState() => _SurahDetailScreenState();
 }
 
 class _SurahDetailScreenState extends State<SurahDetailScreen> {
-
   // ---------------------------------------------------------
   // 🔹 API Section: আয়াতের লিস্ট ফেচ করার ফাংশন
   // ---------------------------------------------------------
@@ -38,10 +42,12 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
       await Future.delayed(const Duration(seconds: 1));
       return List.generate(
         widget.surah['numberOfAyahs'],
-            (index) => {
+        (index) => {
           "number": index + 1,
-          "text": "بِسْم.ِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", // API থেকে আসা আরবি টেক্সট এখানে বসবে
-          "translation": "Translation of ayah number ${index + 1} will appear here.", // অনুবাদ এখানে বসবে
+          "text":
+              "بِسْم.ِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", // API থেকে আসা আরবি টেক্সট এখানে বসবে
+          "translation":
+              "Translation of ayah number ${index + 1} will appear here.", // অনুবাদ এখানে বসবে
         },
       );
     } catch (e) {
@@ -63,13 +69,20 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
               elevation: 0,
               backgroundColor: const Color(0xFF1B5E20),
               leading: IconButton(
-                icon: Icon(Icons.arrow_back_ios,
-                    color: innerBoxIsScrolled ? Colors.white : Colors.grey),
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  color: innerBoxIsScrolled ? Colors.white : Colors.grey,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
               title: innerBoxIsScrolled
-                  ? Text(widget.surah['englishName'],
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
+                  ? Text(
+                      widget.surah['englishName'],
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
                   : null,
               centerTitle: true,
               flexibleSpace: FlexibleSpaceBar(
@@ -88,9 +101,11 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                               "﷽",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: 28, // সাইজ আপনার পছন্দমতো বাড়াতে বা কমাতে পারেন
+                                fontSize:
+                                    28, // সাইজ আপনার পছন্দমতো বাড়াতে বা কমাতে পারেন
                                 color: const Color(0xFF1B5E20),
-                                fontFamily: 'QuranFont', // আপনার সেট করা আরবি ফন্ট
+                                fontFamily:
+                                    'QuranFont', // আপনার সেট করা আরবি ফন্ট
                               ),
                             ),
                           ),
@@ -106,7 +121,9 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
           future: fetchAyahs(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator(color: Color(0xFF1B5E20)));
+              return const Center(
+                child: CircularProgressIndicator(color: Color(0xFF1B5E20)),
+              );
             }
             if (snapshot.hasError) {
               return Center(child: Text("Error: ${snapshot.error}"));
@@ -146,8 +163,14 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
       ),
       child: Column(
         children: [
-          Text(widget.surah['englishName'],
-              style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+          Text(
+            widget.surah['englishName'],
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           Text(
             widget.surah['name'],
             style: const TextStyle(
@@ -183,12 +206,52 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
               CircleAvatar(
                 radius: 14,
                 backgroundColor: const Color(0xFF1B5E20),
-                child: Text("${ayah['number']}", style: const TextStyle(color: Colors.white, fontSize: 12)),
+                child: Text(
+                  "${ayah['number']}",
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                ),
               ),
               const Spacer(),
-              const Icon(Icons.share_outlined, color: Color(0xFF1B5E20), size: 20),
+
+              // const Icon(Icons.share_outlined, color: Color(0xFF1B5E20), size: 20),
+              IconButton(
+                icon: const Icon(
+                  Icons.share_outlined,
+                  size: 20,
+                  color: Color(0xFF1B5E20),
+                ),
+                onPressed: () {
+                  // ১. আপনার API ডাটা যদি 'ayah' ভেরিয়েবলে থাকে
+                  // ২. সূরার নাম যদি উপরের উইজেট থেকে আসে তবে 'widget.surahName'
+
+                  // রেড লাইন দূর করার জন্য আমরা চেক করে নিচ্ছি ভেরিয়েবলটি আছে কি না
+                  String sName = "Surah";
+                  try {
+                    sName = widget
+                        .surahName; // এখানে widget.surahName ব্যবহার করা হয়েছে
+                  } catch (e) {
+                    sName =
+                        "Holy Quran"; // যদি কোনো কারণে না পায় তবে এটি দেখাবে
+                  }
+
+                  ShareLogic.shareAyah(
+                    arabicText: ayah['arabic'] ?? ayah['text'] ?? "No Arabic",
+                    englishTranslation:
+                        ayah['translation'] ??
+                        ayah['en_text'] ??
+                        "No Translation",
+                    surahName: sName, // এখন আর রেড লাইন আসবে না
+                    ayahNumber: ayah['id'] ?? ayah['number'] ?? 0,
+                  );
+                },
+              ),
+
               const SizedBox(width: 15),
-              const Icon(Icons.play_arrow_outlined, color: Color(0xFF1B5E20), size: 24),
+              const Icon(
+                Icons.play_arrow_outlined,
+                color: Color(0xFF1B5E20),
+                size: 24,
+              ),
               const SizedBox(width: 15),
               // bookmark
               // const Icon(Icons.bookmark_border_outlined, color: Color(0xFF1B5E20), size: 20),
@@ -196,11 +259,15 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
               // IconButton দিয়ে রিপ্লেস করুন
               Consumer<BookmarkProvider>(
                 builder: (context, bookmarkProvider, child) {
-                  bool bookmarked = bookmarkProvider.isBookmarked(ayah['number']);
+                  bool bookmarked = bookmarkProvider.isBookmarked(
+                    ayah['number'],
+                  );
 
                   return IconButton(
                     icon: Icon(
-                      bookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                      bookmarked
+                          ? Icons.bookmark_rounded
+                          : Icons.bookmark_border_rounded,
                       color: const Color(0xFF1B5E20),
                       size: 24,
                     ),
@@ -208,7 +275,11 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                       bookmarkProvider.toggleBookmark(ayah);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(bookmarked ? "Removed from Bookmarks" : "Saved to Bookmarks"),
+                          content: Text(
+                            bookmarked
+                                ? "Removed from Bookmarks"
+                                : "Saved to Bookmarks",
+                          ),
                           duration: const Duration(seconds: 1),
                         ),
                       );
@@ -216,7 +287,6 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
                   );
                 },
               ),
-
             ],
           ),
         ),
@@ -225,10 +295,10 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
           ayah['text'],
           textAlign: TextAlign.right,
           style: const TextStyle(
-            fontSize: 28,             // আরবি সাইজ বাড়িয়ে ২৮-৩২ এর মধ্যে রাখুন
+            fontSize: 28, // আরবি সাইজ বাড়িয়ে ২৮-৩২ এর মধ্যে রাখুন
             fontWeight: FontWeight.normal,
-            fontFamily: 'QuranFont',  // আপনার ফন্ট নাম
-            height: 2.0,              // লাইনের মাঝে গ্যাপ যাতে হরকত স্পষ্ট থাকে
+            fontFamily: 'QuranFont', // আপনার ফন্ট নাম
+            height: 2.0, // লাইনের মাঝে গ্যাপ যাতে হরকত স্পষ্ট থাকে
             color: Colors.black87,
           ),
         ),
@@ -245,8 +315,6 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
     );
   }
 
-
-
   // Audio Player
   Widget _buildAudioPlayerBar() {
     return Container(
@@ -254,7 +322,9 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10, spreadRadius: 2)],
+        boxShadow: [
+          BoxShadow(color: Colors.black12, blurRadius: 10, spreadRadius: 2),
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
