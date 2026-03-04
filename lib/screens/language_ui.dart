@@ -1,6 +1,7 @@
 // lib/screens/language_ui.dart
 
 import 'package:flutter/material.dart';
+import 'package:holy_quran/screens/home_screen.dart';
 import 'package:provider/provider.dart';
 import '../providers/quran_provider.dart';
 
@@ -41,8 +42,15 @@ class LanguageScreen extends StatelessWidget {
 
               if (context.mounted) Navigator.pop(context);
 
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => HomeScreen()),
+                    (route) => false,
+              );
+
               // সফলতার বার্তা
               ScaffoldMessenger.of(context).showSnackBar(
+
                 SnackBar(content: Text("Translation changed to $name")),
               );
             },
