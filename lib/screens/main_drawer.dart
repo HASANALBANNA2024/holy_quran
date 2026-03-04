@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:holy_quran/rates/rate_app.dart';
 import 'package:holy_quran/screens/bookmark_screen.dart';
 import 'package:holy_quran/screens/donation_screen.dart';
 import 'package:holy_quran/screens/prayer_screen.dart';
 import 'package:holy_quran/screens/qibla_screen.dart';
 import 'package:holy_quran/widgets/about_us.dart';
-import 'package:holy_quran/widgets/share_app.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:in_app_review/in_app_review.dart';
+import 'package:url_launcher/url_launcher.dart';
 // import 'package:holy_quran/screens/qibla_screen.dart';
 
 class MainDrawer extends StatelessWidget {
@@ -89,10 +89,7 @@ class MainDrawer extends StatelessWidget {
             }),
             _buildDrawerItem(context, Icons.star_rounded, "Rate Us", () {
               Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => RateApp()),
-              );
+              _rateApp(context);
             }),
             _buildDrawerItem(context, Icons.volunteer_activism, "Donation", () {
               Navigator.pop(context);
@@ -199,6 +196,38 @@ Jazakallah Khairan 🤲
     Share.share(shareText, subject: 'Download $appName');
   }
 
+
+  // Rate us
+  void _rateApp(BuildContext context) async {
+    final String appId = 'com.example.islamic_app';  // আপনার প্যাকেজ নাম
+    final String playStoreUrl = 'https://play.google.com/store/apps/details?id=$appId';
+
+    try {
+      // ✅ Try to launch Play Store app first
+      final Uri playStoreUri = Uri.parse('market://details?id=$appId');
+
+      if (await canLaunchUrl(playStoreUri)) {
+        // Play Store app installed, open there
+        await launchUrl(playStoreUri, mode: LaunchMode.externalApplication);
+      } else if (await canLaunchUrl(Uri.parse(playStoreUrl))) {
+        // Play Store app not installed, open in browser
+        await launchUrl(Uri.parse(playStoreUrl), mode: LaunchMode.externalApplication);
+      } else {
+        // Nothing works
+        debugPrint('❌ Could not launch any URL');
+        _showSnackBar(context, 'Could not open Play Store');
+      }
+    } catch (e) {
+      debugPrint('Error opening Play Store: $e');
+      _showSnackBar(context, 'Could not open Play Store');
+    }
+  }
+
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
 
 
 
