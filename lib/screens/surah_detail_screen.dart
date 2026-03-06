@@ -239,7 +239,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
         for (int i = 0; i < _cachedAyahs.length; i++) {
           int globalId = _cachedAyahs[i]['globalAyahId'];
           // ✅ ar.alafasy এর পরিবর্তে qariId ব্যবহার করা হয়েছে
-          playlist.add(AudioSource.uri(Uri.parse("https://cdn.islamic.network/quran/audio/128/$qariId/$globalId.mp3")));
+          playlist.add(AudioSource.uri(Uri.parse("https://cdn.islamic.network/quran/audio/64/$qariId/$globalId.mp3")));
         }
         int playIndex = startAyahIndex < 0 ? 0 : startAyahIndex;
         await _audioPlayer.setAudioSource(ConcatenatingAudioSource(children: playlist), initialIndex: playIndex);
