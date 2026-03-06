@@ -7,6 +7,8 @@ import 'package:holy_quran/screens/surah_detail_screen.dart';
 import 'package:holy_quran/themes/theme_provider.dart';
 import 'package:holy_quran/widgets/quick_action_card.dart';
 import 'package:provider/provider.dart';
+import 'package:holy_quran/providers/qari_provider.dart';
+import 'package:holy_quran/screens/qari_selection_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -277,6 +279,15 @@ class _HomeScreenState extends State<HomeScreen> {
         //   trailing: const Icon(Icons.chevron_right),
         //   onTap: () {},
         // ),
+        ListTile(
+          title: const Text("Change Qari"),
+          subtitle: Text(context.watch<QariProvider>().selectedQariName),
+          leading: const Icon(Icons.mic, color: Color(0xFF1B5E20)),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const QariSelectionScreen()));
+          },
+        ),
         SwitchListTile(
           secondary: const Icon(Icons.dark_mode, color: Colors.green),
           title: const Text("Dark Mode"),
