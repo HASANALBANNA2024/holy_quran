@@ -136,7 +136,9 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             CircularProgressIndicator(color: Color(0xFF1B5E20)),
             SizedBox(height: 15),
-            Text("Loading Surahs...", style: TextStyle(color: Colors.grey)),
+            Text("Loading Surahs...",
+                style: TextStyle(
+                    color: Colors.grey)),
           ],
         ),
       );
@@ -220,11 +222,15 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         const Text(
           "Preferences",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 16, fontFamily: 'Translation'),
         ),
         const SizedBox(height: 10),
         ListTile(
-          leading: const Icon(Icons.language, color: Colors.green),
+          leading: const Icon(
+              Icons.language,
+              color: Colors.green),
           title: const Text("Translation Language"),
           subtitle: Text(
             Provider.of<QuranProvider>(context).currentLang.toUpperCase(),
@@ -237,12 +243,13 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           },
         ),
-        ListTile(
-          leading: const Icon(Icons.format_size, color: Colors.green),
-          title: const Text("Arabic Font Size"),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () {},
-        ),
+        //Future Feature add of Font Size input of user
+        // ListTile(
+        //   leading: const Icon(Icons.format_size, color: Colors.green),
+        //   title: const Text("Arabic Font Size"),
+        //   trailing: const Icon(Icons.chevron_right),
+        //   onTap: () {},
+        // ),
         SwitchListTile(
           secondary: const Icon(Icons.dark_mode, color: Colors.green),
           title: const Text("Dark Mode"),

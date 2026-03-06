@@ -78,4 +78,8 @@ flutter:
   fonts:
     - family: QuranFont
       fonts:
-        - asset: assets/fonts/NotoNaskhArabic-Regular.ttf
+        - asset: assets/fonts/Amiri-Bold.ttf
+
+    - family: Translation
+      fonts:
+        - asset: assets/fonts/Roboto-bold.ttf

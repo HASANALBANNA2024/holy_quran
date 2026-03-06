@@ -392,9 +392,27 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         const SizedBox(height: 15),
-        Text(ayah['arabic'] ?? '', textAlign: TextAlign.right, style: const TextStyle(fontSize: 28, fontFamily: 'Amiri', height: 2.0, color: Colors.black87)),
+        // Arabic Text of Ayah
+        Text(ayah['arabic'] ?? '',
+            textAlign: TextAlign.right,
+            style: const TextStyle(
+                fontSize: 30,
+                fontFamily: 'QuranFont',
+                height: 1.8,
+              color: Color(0xFF1A1A1A),
+              fontWeight: FontWeight.w500,
+            )),
         const SizedBox(height: 10),
-        Align(alignment: Alignment.centerLeft, child: Text(ayah['trans'] ?? '', style: const TextStyle(fontSize: 14, color: Colors.black54))),
+        // Translation Text of Ayah
+        Align(alignment: Alignment.centerLeft,
+            child: Text(ayah['trans'] ?? '',
+                style: TextStyle(
+                    fontSize: 15,
+                    height: 1.5,
+                    color:Colors.blueGrey[700],
+                    fontFamily: 'Translation'
+                ))),
+
         const SizedBox(height: 20),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
