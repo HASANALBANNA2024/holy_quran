@@ -15,7 +15,8 @@ class BookmarksScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           "Bookmarks",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+              fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),

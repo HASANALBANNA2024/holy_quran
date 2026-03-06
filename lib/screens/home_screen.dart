@@ -32,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.white,
               fontWeight: FontWeight.bold,
               letterSpacing: 2,
+              fontFamily: 'Translation'
             ),
           ),
           centerTitle: true,
@@ -71,6 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.grey[800],
+                            fontFamily: 'Translation'
                           ),
                         ),
                       ),
@@ -83,6 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF1B5E20),
+                            fontFamily: 'Translation'
                           ),
                         ),
                       ),
@@ -99,6 +102,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 pinned: true,
                 delegate: _SliverAppBarDelegate(
                   TabBar(
+                    // label style
+                    labelStyle: const TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'Translation',
+                      fontWeight: FontWeight.w500
+                    ),
+                    // unselected label styel
+                    unselectedLabelStyle: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: 'Translation'
+
+                    ),
                     indicatorColor: const Color(0xFF1B5E20),
                     labelColor: const Color(0xFF1B5E20),
                     unselectedLabelColor: Colors.grey[1000],
@@ -138,7 +154,10 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 15),
             Text("Loading Surahs...",
                 style: TextStyle(
-                    color: Colors.grey)),
+                  color: Colors.grey,
+
+
+                )),
           ],
         ),
       );
@@ -169,18 +188,26 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           title: Text(
             surah['englishName'] ?? "Unknown", // ✅ ইংরেজি নাম দেখাবে
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style:TextStyle(
+                fontWeight: FontWeight.bold,
+              height: 1.5,
+              color: Colors.blueGrey[700], // প্রফেশনাল গ্রে কালার
+              fontFamily: 'Translation',
+            ),
           ),
           subtitle: Text(
             "${(surah['revelationType'] ?? 'MECCAN').toString().toUpperCase()} • ${surah['ayahs']?.length ?? 0} VERSES",
-            style: const TextStyle(fontSize: 12),
+            style: TextStyle(fontSize: 12,
+              color: Colors.blueGrey[700], // প্রফেশনাল গ্রে কালার
+              fontFamily: 'Translation',
+            ),
           ),
           trailing: Text(
             surah['name'] ?? "", // ✅ আরবী নাম
             style: const TextStyle(
               color: Color(0xFF1B5E20),
-              fontSize: 22,
-              fontFamily: 'Amiri',
+              fontSize: 24,
+              fontFamily: 'QuranFont',
             ),
           ),
           onTap: () {
