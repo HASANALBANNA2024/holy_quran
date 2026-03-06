@@ -3,6 +3,7 @@ import 'package:holy_quran/screens/bookmark_screen.dart';
 import 'package:holy_quran/screens/donation_screen.dart';
 import 'package:holy_quran/screens/prayer_screen.dart';
 import 'package:holy_quran/screens/qibla_screen.dart';
+import 'package:holy_quran/screens/tasbih_screen.dart';
 import 'package:holy_quran/widgets/about_us.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:in_app_review/in_app_review.dart';
@@ -74,6 +75,11 @@ class MainDrawer extends StatelessWidget {
                 );
               },
             ),
+
+            _buildDrawerItem(context, Icons.fingerprint,"Tasbih Counter", (){
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => TasbihScreen()));
+            }),
 
             const Divider(color: Colors.grey, indent: 20, endIndent: 20),
 
