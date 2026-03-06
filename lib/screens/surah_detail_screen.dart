@@ -5,6 +5,7 @@ import 'package:holy_quran/providers/bookmark_provider.dart';
 import 'package:holy_quran/providers/quran_provider.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
+import 'package:holy_quran/providers/qari_provider.dart';
 
 class SurahDetailScreen extends StatefulWidget {
   final String surahName;
@@ -226,6 +227,10 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
     if (_isAudioLoading) return;
     setState(() => _isAudioLoading = true);
 
+    // ✅ প্রোভাইডার থেকে বর্তমানে সিলেক্ট করা ক্বারী আইডি নেওয়া
+    final qariProvider = Provider.of<QariProvider>(context, listen: false);
+    String qariId = qariProvider.selectedQariId;
+
     try {
       final List<AudioSource> playlist = [];
       int surahNumber = widget.surahIndex + 1;
@@ -233,7 +238,8 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
       if (surahNumber == 1) {
         for (int i = 0; i < _cachedAyahs.length; i++) {
           int globalId = _cachedAyahs[i]['globalAyahId'];
-          playlist.add(AudioSource.uri(Uri.parse("https://cdn.islamic.network/quran/audio/128/ar.alafasy/$globalId.mp3")));
+          // ✅ ar.alafasy এর পরিবর্তে qariId ব্যবহার করা হয়েছে
+          playlist.add(AudioSource.uri(Uri.parse("https://cdn.islamic.network/quran/audio/128/$qariId/$globalId.mp3")));
         }
         int playIndex = startAyahIndex < 0 ? 0 : startAyahIndex;
         await _audioPlayer.setAudioSource(ConcatenatingAudioSource(children: playlist), initialIndex: playIndex);
@@ -245,7 +251,8 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
       if (surahNumber == 9) {
         for (int i = 0; i < _cachedAyahs.length; i++) {
           int globalId = _cachedAyahs[i]['globalAyahId'];
-          playlist.add(AudioSource.uri(Uri.parse("https://cdn.islamic.network/quran/audio/128/ar.alafasy/$globalId.mp3")));
+          // ✅ ar.alafasy এর পরিবর্তে qariId ব্যবহার করা হয়েছে
+          playlist.add(AudioSource.uri(Uri.parse("https://cdn.islamic.network/quran/audio/128/$qariId/$globalId.mp3")));
         }
         await _audioPlayer.setAudioSource(ConcatenatingAudioSource(children: playlist), initialIndex: startAyahIndex);
         _audioPlayer.play();
@@ -253,11 +260,13 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
         return;
       }
 
-      playlist.add(AudioSource.uri(Uri.parse("https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3")));
+      // বিসমিল্লাহর জন্য (এখানেও qariId ব্যবহার করা হয়েছে)
+      playlist.add(AudioSource.uri(Uri.parse("https://cdn.islamic.network/quran/audio/128/$qariId/1.mp3")));
 
       for (int i = 0; i < _cachedAyahs.length; i++) {
         int globalId = _cachedAyahs[i]['globalAyahId'];
-        playlist.add(AudioSource.uri(Uri.parse("https://cdn.islamic.network/quran/audio/128/ar.alafasy/$globalId.mp3")));
+        // ✅ ar.alafasy এর পরিবর্তে qariId ব্যবহার করা হয়েছে
+        playlist.add(AudioSource.uri(Uri.parse("https://cdn.islamic.network/quran/audio/128/$qariId/$globalId.mp3")));
       }
 
       int playIndex = startAyahIndex == 0 ? 0 : startAyahIndex + 1;
