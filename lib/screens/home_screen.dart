@@ -16,23 +16,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // স্ক্রিন লোড হওয়ার সাথে সাথে জোর করে ডাটা লোড করানো হচ্ছে
-  //   WidgetsBinding.instance.addPostFrameCallback((_) async {
-  //     try {
-  //       final provider = Provider.of<QuranProvider>(context, listen: false);
-  //       if (provider.surahs.isEmpty) {
-  //         await provider.initQuran();
-  //       }
-  //     } catch (e) {
-  //       debugPrint("Error loading from Home: $e");
-  //     }
-  //   });
-  // }
 
-  @override
+   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
