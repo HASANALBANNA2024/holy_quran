@@ -1,58 +1,12 @@
 class QariData {
   static const List<Map<String, String>> qariList = [
     {'name': 'Mishary Rashid Alafasy', 'id': 'ar.alafasy'}, // Default
-    {'name': 'Abdurrahman As-Sudais', 'id': 'ar.abdulsamad'},
-    {'name': 'Abdul Basit (Murattal)', 'id': 'ar.abdulbasitmurattal'},
-    {'name': 'Abdul Basit (Mujawwad)', 'id': 'ar.abdulbasitmujawwad'},
-    {'name': 'Maher Al Muaiqly', 'id': 'ar.maheralmuaiqly'},
-    {'name': 'Saud Al-Shuraim', 'id': 'ar.shuraym'},
-    {'name': 'Yasser Ad-Dussary', 'id': 'ar.yasseradduasari'},
-    {'name': 'Ahmed Al-Ajmy', 'id': 'ar.ahmedajamy'},
-    {'name': 'Saad Al-Ghamdi', 'id': 'ar.saadghamidi'},
-    {'name': 'Abu Bakr Al-Shatri', 'id': 'ar.shaatree'},
-    {'name': 'Hani Ar-Rifai', 'id': 'ar.hanirifai'},
-    {'name': 'Abdullah Basfar', 'id': 'ar.basfar'},
-    {'name': 'Khalifa Al Tunaiji', 'id': 'ar.tunaiji'},
-    {'name': 'Mahmoud Al-Hosary', 'id': 'ar.husary'},
-    {'name': 'Siddiq Al-Minshawi (Murattal)', 'id': 'ar.minshawi'},
-    {'name': 'Siddiq Al-Minshawi (Mujawwad)', 'id': 'ar.minshawimujawwad'},
-    {'name': 'Muhammad Al-Luhaidan', 'id': 'ar.luhaidan'},
-    {'name': 'Salah Al-Budair', 'id': 'ar.salahalbudair'},
-    {'name': 'Nasser Al Qatami', 'id': 'ar.nasseralqatami'},
-    {'name': 'Idrees Abkar', 'id': 'ar.idreesabkar'},
-    {'name': 'Fares Abbad', 'id': 'ar.faresabbad'},
-    {'name': 'Salah Bukhatir', 'id': 'ar.salahbukhatir'},
-    {'name': 'Abdul Aziz Az-Zahrani', 'id': 'ar.zahran'},
-    {'name': 'Abdullah Al-Juhany', 'id': 'ar.juhany'},
-    {'name': 'Ali Jaber', 'id': 'ar.alijaber'},
-    {'name': 'Bandar Balila', 'id': 'ar.balila'},
-    {'name': 'Raad Al Kurdi', 'id': 'ar.raadalkurdi'},
-    {'name': 'Wadih Al-Yamani', 'id': 'ar.wadihalyamani'},
-    {'name': 'Ahmed Al-Nufais', 'id': 'ar.ahmednufais'},
-    {'name': 'Mustafa Ismail', 'id': 'ar.mustafaismail'},
-    {'name': 'Ali Al-Huthaify', 'id': 'ar.hudhaify'},
-    {'name': 'Khalid Al-Jaleel', 'id': 'ar.khalidjaleel'},
-    {'name': 'Mohamed Tablawi', 'id': 'ar.tablawi'},
-    {'name': 'Abdul Mohsin Al-Qasim', 'id': 'ar.qasim'},
-    {'name': 'Abdullah Awad Al-Juhany', 'id': 'ar.juhany'},
-    {'name': 'Ahmad Al-Hawashi', 'id': 'ar.hawashi'},
-    {'name': 'Ahmed Saber', 'id': 'ar.ahmedsaber'},
-    {'name': 'Akram Al-Alaqmi', 'id': 'ar.akram'},
-    {'name': 'Ali Al-Huthaify (Qaloon)', 'id': 'ar.alhuthaifyqaloon'},
-    {'name': 'Aziz Alili', 'id': 'ar.azizalili'},
-    {'name': 'Fares Abbad', 'id': 'ar.fares'},
-    {'name': 'Ibrahim Al-Akhdar', 'id': 'ar.ibrahimakhdar'},
-    {'name': 'Imad Zuhair Hafez', 'id': 'ar.imadzuhair'},
-    {'name': 'Mahmoud Ali Al-Banna', 'id': 'ar.mahmoudalibanna'},
-    {'name': 'Mohamed Al-Kanouni', 'id': 'ar.kanouni'},
-    {'name': 'Muhammad Jibreel', 'id': 'ar.muhammadjibreel'},
-    {'name': 'Sahl Yassin', 'id': 'ar.sahlyassin'},
-    {'name': 'Salah Al-Hashim', 'id': 'ar.salahalhashim'},
-    {'name': 'Shirazad Taher', 'id': 'ar.shirazadtaher'},
-    {'name': 'Yousef Al-Shuaie', 'id': 'ar.yousefalshuaie'},
-    {'name': 'Zaki Daghistani', 'id': 'ar.zakidaghistani'},
-    {'name': 'Abdallah Kamel', 'id': 'ar.abdullahkamel'},
-    {'name': 'Abdul Rashid Sufi', 'id': 'ar.rashidsufi'},
-    {'name': 'Ali Hajaj Al-Swaysi', 'id': 'ar.alihajjajalsuwaysi'},
+    {'name': 'Abdurrahman As-Sudais', 'id': 'ar.abdulsamad'}, // done
+    {'name': 'Abdul Basit (Murattal)', 'id': 'ar.abdulbasitmurattal'}, // done
+    {'name': 'Ahmed Al-Ajmy', 'id': 'ar.ahmedajamy'},// done
+    {'name': 'Abu Bakr Al-Shatri', 'id': 'ar.shaatree'},// done
+    {'name': 'Hani Ar-Rifai', 'id': 'ar.hanirifai'},// done
+    {'name': 'Mahmoud Al-Hosary', 'id': 'ar.husary'}, // done
+    {'name': 'Ali Al-Huthaify', 'id': 'ar.hudhaify'}, // done
   ];
 }

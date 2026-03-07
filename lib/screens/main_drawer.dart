@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:holy_quran/screens/bookmark_screen.dart';
 import 'package:holy_quran/screens/donation_screen.dart';
+import 'package:holy_quran/screens/islamic_alarm_screen.dart';
 import 'package:holy_quran/screens/prayer_screen.dart';
 import 'package:holy_quran/screens/qibla_screen.dart';
 import 'package:holy_quran/screens/tasbih_screen.dart';
 import 'package:holy_quran/widgets/about_us.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:holy_quran/providers/alarm_provider.dart';
 // import 'package:holy_quran/screens/qibla_screen.dart';
 
 class MainDrawer extends StatelessWidget {
@@ -43,24 +46,25 @@ class MainDrawer extends StatelessWidget {
             // _buildDrawerItem(context, Icons.history_rounded, "Last Read", () {
             //   Navigator.pop(context);
             // }),
-            _buildDrawerItem(
-              context,
-              Icons.explore_rounded,
-              "Qibla Direction",
-              () {
-                Navigator.pop(context);
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => QiblaScreen()),
-                );
-
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) =>const QiblaScreen()),
-                // );
-              },
-            ),
+            // future ai feature update hisabe ashbe
+            // _buildDrawerItem(
+            //   context,
+            //   Icons.explore_rounded,
+            //   "Qibla Direction",
+            //   () {
+            //     Navigator.pop(context);
+            //
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(builder: (_) => QiblaScreen()),
+            //     );
+            //
+            //     // Navigator.push(
+            //     //   context,
+            //     //   MaterialPageRoute(builder: (context) =>const QiblaScreen()),
+            //     // );
+            //   },
+            // ),
             _buildDrawerItem(
               context,
               Icons.access_time_filled_rounded,
@@ -80,6 +84,40 @@ class MainDrawer extends StatelessWidget {
               Navigator.pop(context);
               Navigator.push(context, MaterialPageRoute(builder: (_) => TasbihScreen()));
             }),
+
+            //future update feature alarm
+            // islamic alarm
+            // _buildDrawerItem(
+            //   context,
+            //   Icons.alarm,
+            //   'Islamic Alarm',
+            //       () {
+            //     Navigator.pop(context); // ড্রয়ার বন্ধ করবে
+            //
+            //     // আমরা Provider থেকে বর্তমান অ্যালার্মের ডেটাগুলো নেব
+            //     final alarmProvider = Provider.of<AlarmProvider>(context, listen: false);
+            //
+            //     Navigator.push(context, MaterialPageRoute(builder: (context) =>
+            //         IslamicAlarmScreen(
+            //             alarmTitle: alarmProvider.currentPrayerName, // 'Fajr', 'Dhuhr' ইত্যাদি দেখাবে
+            //             surahName: alarmProvider.selectedSurahName ?? "None",
+            //             translation: "Verily, with hardship comes ease.", // এটি আপনি ডাইনামিক করতে পারেন
+            //             isAzan: alarmProvider.isUsingAzan,
+            //             onStop: () {
+            //               alarmProvider.stopAlarm();
+            //               Navigator.pop(context);
+            //             },
+            //             onReadQuran: () {
+            //               alarmProvider.stopAlarm();
+            //               Navigator.pop(context);
+            //               // এখানে আপনার কুরআন পেজে যাওয়ার কোড দিন
+            //             }
+            //         )
+            //     ));
+            //   },
+            // ),
+
+
 
             const Divider(color: Colors.grey, indent: 20, endIndent: 20),
 

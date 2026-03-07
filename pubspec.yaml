@@ -27,6 +27,7 @@ dependencies:
   shared_preferences: ^2.2.2  # এখানে অতিরিক্ত টেক্সট সরানো হয়েছে
 
   # অডিও এবং স্টেট ম্যানেজমেন্ট
+  connectivity_plus: ^6.1.0
   just_audio: ^0.9.36
   provider: ^6.1.5+1
 

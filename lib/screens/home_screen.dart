@@ -9,6 +9,9 @@ import 'package:holy_quran/widgets/quick_action_card.dart';
 import 'package:provider/provider.dart';
 import 'package:holy_quran/providers/qari_provider.dart';
 import 'package:holy_quran/screens/qari_selection_screen.dart';
+import 'package:holy_quran/providers/alarm_provider.dart';
+import 'package:holy_quran/screens/islamic_alarm_screen.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,6 +24,37 @@ class _HomeScreenState extends State<HomeScreen> {
 
    @override
   Widget build(BuildContext context) {
+     // future update feature alarm
+     // //alarm function call started
+     // final alarmProvider = Provider.of<AlarmProvider>(context);
+     //
+     // // ২. যদি অ্যালার্ম বাজতে শুরু করে, তবে অটোমেটিক স্ক্রিন চেঞ্জ হবে
+     // if (alarmProvider.isAlarmPlaying) {
+     //   WidgetsBinding.instance.addPostFrameCallback((_) {
+     //     Navigator.push(
+     //       context,
+     //       MaterialPageRoute(
+     //         builder: (context) => IslamicAlarmScreen(
+     //           alarmTitle: alarmProvider.currentPrayerName,
+     //           surahName: alarmProvider.selectedSurahName ?? "Adhan",
+     //           translation: "নিশ্চয় কষ্টের সাথে স্বস্তি আছে।",
+     //           isAzan: alarmProvider.isUsingAzan,
+     //           onStop: () {
+     //             alarmProvider.stopAlarm();
+     //             Navigator.pop(context);
+     //           },
+     //           onReadQuran: () {
+     //             alarmProvider.stopAlarm();
+     //             Navigator.pop(context);
+     //             // আপনার কুরআন লিস্ট পেজে যাওয়ার কোড
+     //           },
+     //         ),
+     //       ),
+     //     );
+     //   });
+     // }
+     // // alarm function call end
+     //
     return DefaultTabController(
       length: 3,
       child: Scaffold(

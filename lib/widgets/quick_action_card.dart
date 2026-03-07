@@ -3,6 +3,7 @@ import 'package:holy_quran/screens/bookmark_screen.dart';
 import 'package:holy_quran/screens/donation_screen.dart';
 import 'package:holy_quran/screens/prayer_screen.dart';
 import 'package:holy_quran/screens/qibla_screen.dart';
+import 'package:holy_quran/screens/tasbih_screen.dart';
 
 class QuickActionCard extends StatelessWidget {
   const QuickActionCard({super.key});
@@ -21,13 +22,13 @@ class QuickActionCard extends StatelessWidget {
             SizedBox(width: 5,),
             // qibla screen
             _buildIconButton(
-              icon: Icons.explore,
-              label: "Qibla Direction",
+              icon: Icons.fingerprint,
+              label: "Tasbih Counter",
               color: Colors.blue,
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => QiblaScreen()),
+                  MaterialPageRoute(builder: (_) => TasbihScreen()),
                 );
               },
             ),
