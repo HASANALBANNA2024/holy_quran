@@ -229,9 +229,9 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildTeamMember(name: 'Abdullah', role: 'Lead Dev', icon: Icons.code),
+        _buildTeamMember(name: 'MD. Hasan Al Banna', role: 'Lead Dev', icon: Icons.code),
         const SizedBox(width: 40),
-        _buildTeamMember(name: 'Amina', role: 'Designer', icon: Icons.palette),
+        _buildTeamMember(name: 'Afsana Sultana', role: 'Designer', icon: Icons.palette),
       ],
     ),
   );

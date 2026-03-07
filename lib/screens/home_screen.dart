@@ -160,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     indicatorWeight: 3,
                     tabs: const [
                       Tab(text: "Surah"),
-                      Tab(text: "Juz"),
+                      // Tab(text: "Juz"),
                       Tab(text: "Settings"),
                     ],
                   ),
@@ -171,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
           body: TabBarView(
             children: [
               _buildSurahListWithApi(),
-              _buildJuzList(),
+              // _buildJuzList(),
               _buildSettingsList(),
             ],
           ),
@@ -271,22 +271,22 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
-
-  Widget _buildJuzList() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(20),
-      itemCount: 30,
-      itemBuilder: (context, index) => ListTile(
-        leading: CircleAvatar(
-          backgroundColor: Colors.green[50],
-          child: Text("${index + 1}"),
-        ),
-        title: Text("Juz ${index + 1}"),
-        subtitle: const Text("Starts from Surah details..."),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 14),
-      ),
-    );
-  }
+ // Future Feature Add
+  // Widget _buildJuzList() {
+  //   return ListView.builder(
+  //     padding: const EdgeInsets.all(20),
+  //     itemCount: 30,
+  //     itemBuilder: (context, index) => ListTile(
+  //       leading: CircleAvatar(
+  //         backgroundColor: Colors.green[50],
+  //         child: Text("${index + 1}"),
+  //       ),
+  //       title: Text("Juz ${index + 1}"),
+  //       subtitle: const Text("Starts from Surah details..."),
+  //       trailing: const Icon(Icons.arrow_forward_ios, size: 14),
+  //     ),
+  //   );
+  // }
 
   Widget _buildSettingsList() {
     return ListView(
