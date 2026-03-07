@@ -75,6 +75,10 @@ flutter:
     - assets/data/ur_quran.json
     - assets/data/zh_quran.json
 
+    # sounds
+    - assets/sounds/click.ogg      # ওজিজি ফরম্যাট
+    - assets/sounds/complete.wav   # ওয়েভ ফরম্যাট
+
   fonts:
     - family: QuranFont
       fonts:

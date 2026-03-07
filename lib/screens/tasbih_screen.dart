@@ -1,23 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:async';
 import '../providers/tasbih_provider.dart';
 
-class TasbihScreen extends StatelessWidget {
+class TasbihScreen extends StatefulWidget {
   const TasbihScreen({super.key});
 
-  // বিল্ট-ইন জিকির লিস্ট
-  final List<Map<String, dynamic>> builtInDhikr = const [
-    {'name': 'SubhanAllah', 'target': 33},
-    {'name': 'Alhamdulillah', 'target': 33},
-    {'name': 'Allahu Akbar', 'target': 34},
-    {'name': 'La Ilaha Illallah', 'target': 100},
-    {'name': 'Astaghfirullah', 'target': 100},
-    {'name': 'SubhanAllahi Wa Bihamdihi', 'target': 100},
-  ];
+  @override
+  State<TasbihScreen> createState() => _TasbihScreenState();
+}
+
+class _TasbihScreenState extends State<TasbihScreen> {
+  late ScrollController _autoScrollController;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _autoScrollController = ScrollController();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _startAutoScroll());
+  }
+
+  void _startAutoScroll() {
+    _timer = Timer.periodic(const Duration(seconds: 4), (timer) {
+      if (_autoScrollController.hasClients) {
+        double maxScroll = _autoScrollController.position.maxScrollExtent;
+        double currentScroll = _autoScrollController.offset;
+        double nextScroll = currentScroll + 120;
+        if (nextScroll >= maxScroll) nextScroll = 0;
+
+        _autoScrollController.animateTo(
+          nextScroll,
+          duration: const Duration(seconds: 3),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _autoScrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final tasbih = Provider.of<TasbihProvider>(context);
+    final tasbih = context.watch<TasbihProvider>();
+    bool isCompleted = tasbih.target > 0 && tasbih.count == tasbih.target;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F7F4),
@@ -27,108 +58,219 @@ class TasbihScreen extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
       ),
-      body: Column(
+      body: Stack(
         children: [
-          const SizedBox(height: 20),
-          // জিকির সিলেকশন লিস্ট (Horizontal)
-          SizedBox(
-            height: 50,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              itemCount: builtInDhikr.length,
-              itemBuilder: (context, index) {
-                final item = builtInDhikr[index];
-                bool isSelected = tasbih.selectedDhikr == item['name'];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  child: ActionChip(
-                    backgroundColor: isSelected ? const Color(0xFFC5A059) : Colors.white,
-                    label: Text(item['name'], style: TextStyle(color: isSelected ? Colors.white : Colors.black87)),
-                    onPressed: () => tasbih.setDhikr(item['name'], item['target']),
-                  ),
-                );
-              },
+          // ✅ Islamic Vibe Background Icon
+          const Center(
+            child: Opacity(
+              opacity: 0.04,
+              child: Icon(Icons.mosque, size: 400, color: Colors.green),
             ),
           ),
 
-          const Spacer(),
+          Column(
+            children: [
+              const SizedBox(height: 15),
+              // ✅ Animated Scrolling Short Names
+              SizedBox(
+                height: 55,
+                child: ListView.builder(
+                  controller: _autoScrollController,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: tasbih.builtInDhikr.length,
+                  itemBuilder: (context, index) {
+                    final item = tasbih.builtInDhikr[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      child: ActionChip(
+                        backgroundColor: Colors.white,
+                        label: Text(item['short'], style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1B5E20))),
+                        onPressed: () => tasbih.setDhikr(item['full'], item['target']),
+                      ),
+                    );
+                  },
+                ),
+              ),
 
-          // কাউন্টার ডিসপ্লে এবং মেইন বাটন (আগের গোল ডিজাইন)
-          Center(
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  width: 280, height: 280,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFFC5A059), width: 8),
-                    boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 20)],
+              const SizedBox(height: 25),
+
+              // ✅ Full Dhikr Display Area
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 25),
+                height: 100,
+                alignment: Alignment.center,
+                child: SingleChildScrollView(
+                  child: Text(
+                    tasbih.selectedDhikr,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1B5E20), height: 1.4),
                   ),
                 ),
-                GestureDetector(
-                  onTap: () => tasbih.increment(),
-                  child: Container(
-                    width: 240, height: 240,
-                    decoration: const BoxDecoration(color: Color(0xFF1B5E20), shape: BoxShape.circle),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(tasbih.selectedDhikr, style: const TextStyle(color: Colors.white70, fontSize: 14)),
-                        Text("${tasbih.count}", style: const TextStyle(fontSize: 75, color: Colors.white, fontWeight: FontWeight.bold)),
-                        Text(tasbih.target == 0 ? "Unlimited" : "Target: ${tasbih.target}", style: const TextStyle(color: Colors.white54)),
-                      ],
+              ),
+
+              const Spacer(),
+
+              // ✅ Counter UI (Color Changes on Complete)
+              GestureDetector(
+                onTap: () => tasbih.increment(),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      width: 285, height: 285,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                            color: isCompleted ? Colors.redAccent.withOpacity(0.4) : const Color(0xFFC5A059),
+                            width: 10
+                        ),
+                        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 20)],
+                      ),
                     ),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      width: 245, height: 245,
+                      decoration: BoxDecoration(
+                          color: isCompleted ? const Color(0xFFD32F2F) : const Color(0xFF1B5E20),
+                          shape: BoxShape.circle
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("${tasbih.count}", style: const TextStyle(fontSize: 90, color: Colors.white, fontWeight: FontWeight.bold)),
+                          // ✅ Inside Target Text
+                          Text(
+                            isCompleted ? "Completed!" : (tasbih.target == 0 ? "Unlimited" : "Target: ${tasbih.target}"),
+                            style: TextStyle(
+                                color: isCompleted ? Colors.white : Colors.white70,
+                                fontWeight: isCompleted ? FontWeight.bold : FontWeight.normal,
+                                fontSize: 18
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // ✅ Outside Message
+              const SizedBox(height: 20),
+              AnimatedOpacity(
+                duration: const Duration(milliseconds: 500),
+                opacity: isCompleted ? 1.0 : 0.0,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  decoration: BoxDecoration(
+                      color: Colors.redAccent.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20)
+                  ),
+                  child: const Text(
+                    "MashaAllah! Target Completed",
+                    style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                 ),
-              ],
-            ),
-          ),
+              ),
 
-          const Spacer(),
+              const Spacer(),
 
-          // নিচের বাটনগুলো (Target & Reset)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 40),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _bottomAction(Icons.refresh, "Reset", () => tasbih.reset(), Colors.redAccent),
-                _bottomAction(Icons.track_changes, "Change Target", () {
-                  // টার্গেট বদলানোর জন্য ছোট অপশন
-                  _showTargetMenu(context, tasbih);
-                }, const Color(0xFF1B5E20)),
-              ],
-            ),
+              // ✅ Bottom Buttons
+              Padding(
+                padding: const EdgeInsets.only(bottom: 45),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _bottomBtn(Icons.refresh, "Reset", Colors.redAccent, () => tasbih.reset()),
+                    const SizedBox(width: 60),
+                    _bottomBtn(Icons.tune, "Custom", const Color(0xFF1B5E20), () => _showCustomSetup(context, tasbih)),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _bottomAction(IconData icon, String label, VoidCallback onTap, Color color) {
+  Widget _bottomBtn(IconData icon, String label, Color color, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
       child: Column(
         children: [
-          Icon(icon, color: color, size: 30),
-          Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w500)),
+          CircleAvatar(backgroundColor: color, radius: 28, child: Icon(icon, color: Colors.white)),
+          const SizedBox(height: 5),
+          Text(label, style: TextStyle(color: color, fontWeight: FontWeight.bold)),
         ],
       ),
     );
   }
 
-  void _showTargetMenu(BuildContext context, TasbihProvider provider) {
+  // ✅ Custom Setup (Empty Fields & Quick Select)
+  void _showCustomSetup(BuildContext context, TasbihProvider provider) {
+    final nameCtrl = TextEditingController();
+    final targetCtrl = TextEditingController();
+
     showModalBottomSheet(
       context: context,
-      builder: (context) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(title: const Text("Set Target: 33"), onTap: () { provider.setOnlyTarget(33); Navigator.pop(context); }),
-          ListTile(title: const Text("Set Target: 100"), onTap: () { provider.setOnlyTarget(100); Navigator.pop(context); }),
-          ListTile(title: const Text("Set Target: Unlimited (∞)"), onTap: () { provider.setOnlyTarget(0); Navigator.pop(context); }),
-        ],
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 20, right: 20, top: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Center(child: Text("Custom Counter Setup", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold))),
+            const SizedBox(height: 25),
+
+            const Text("Quick Select Dhikr:", style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 40,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: provider.builtInDhikr.map((d) => Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ActionChip(
+                    label: Text(d['short']),
+                    onPressed: () => nameCtrl.text = d['full'],
+                    backgroundColor: Colors.green.withOpacity(0.1),
+                  ),
+                )).toList(),
+              ),
+            ),
+            TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: "Dhikr / Doa Name", hintText: "Write your doa")),
+
+            const SizedBox(height: 25),
+
+            const Text("Quick Select Target:", style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [33, 34, 100, 1000].map((t) => ActionChip(
+                label: Text(t.toString()),
+                onPressed: () => targetCtrl.text = t.toString(),
+                backgroundColor: const Color(0xFFC5A059).withOpacity(0.2),
+              )).toList(),
+            ),
+            TextField(controller: targetCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: "Target Number", hintText: "Set target")),
+
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                String finalName = nameCtrl.text.isEmpty ? provider.selectedDhikr : nameCtrl.text;
+                int finalTarget = int.tryParse(targetCtrl.text) ?? provider.target;
+                provider.setDhikr(finalName, finalTarget);
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF1B5E20), minimumSize: const Size(double.infinity, 55), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
+              child: const Text("Save Changes", style: TextStyle(color: Colors.white, fontSize: 18)),
+            ),
+            const SizedBox(height: 25),
+          ],
+        ),
       ),
     );
   }
