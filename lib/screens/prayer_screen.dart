@@ -97,7 +97,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
   Widget build(BuildContext context) {
     if (_prayerTimes == null) {
       return const Scaffold(
-        backgroundColor: Color(0xFF1B241A),
+        backgroundColor: Color(0xFFE8F5E9),
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF81C784)),
         ),
@@ -137,10 +137,11 @@ class _PrayerScreenState extends State<PrayerScreen> {
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white70, size: 20),
+          icon: const Icon(Icons.arrow_back, color: Colors.white54, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
       ),
+
       body: Column(
         children: [
           // ১. টপ সেকশন (গ্যাপ কম এবং ওভারল্যাপ প্রোটেকশনসহ)
@@ -148,6 +149,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             child: Column(
               children: [
+                SizedBox(height: 10,),
                 Text(
                   displayName,
                   style: const TextStyle(
@@ -257,40 +259,46 @@ class _PrayerScreenState extends State<PrayerScreen> {
           _updateCounter();
         },
         child: Container(
-          padding: const EdgeInsets.all(12),
+          // প্যাডিং ১২ থেকে বাড়িয়ে ১৬ করা হয়েছে যাতে হাইট বাড়ে
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
           decoration: BoxDecoration(
             color: isSelected
                 ? const Color(0xFF131B12)
                 : const Color(0xFF243023),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(15), // একটু বেশি রাউন্ড করা হয়েছে
             border: isSelected
-                ? Border.all(color: const Color(0xFF81C784), width: 1)
+                ? Border.all(color: const Color(0xFF81C784), width: 1.5)
                 : null,
           ),
           child: Row(
             children: [
-              Icon(icon, color: const Color(0xFF81C784), size: 20),
-              const SizedBox(width: 8),
+              // আইকন সাইজ ২০ থেকে বাড়িয়ে ২৪ করা হয়েছে
+              Icon(icon, color: const Color(0xFF81C784), size: 24),
+              const SizedBox(width: 10), // গ্যাপ কিছুটা বাড়ানো হয়েছে
               Flexible(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min, // কলামটিকে মাঝখানে রাখার জন্য
                   children: [
                     FittedBox(
                       child: Text(
                         name,
-                        style: const TextStyle(
-                          color: Colors.white54,
-                          fontSize: 9,
+                        style: TextStyle(
+                          // isSelected হলে টেক্সট উজ্জ্বল দেখাবে
+                          color: isSelected ? Colors.white : Colors.white60,
+                          fontSize: 11, // ৯ থেকে বাড়িয়ে ১১ করা হয়েছে
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
+                    const SizedBox(height: 2), // টেক্সট দুটির মাঝে গ্যাপ
                     Text(
                       DateFormat.jm().format(time),
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 12,
+                        fontSize: 14, // ১২ থেকে বাড়িয়ে ১৪ করা হয়েছে
                         fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
                       ),
                     ),
                   ],
@@ -319,38 +327,50 @@ class _PrayerScreenState extends State<PrayerScreen> {
         _updateCounter();
       },
       child: Container(
+        // এখানে height এবং width সেট করে কার্ডের সাইজ নিয়ন্ত্রণ করা হয়েছে
+        height: 150, // আপনি চাইলে এটি বাড়িয়ে ১৪০ বা ১৫০ করতে পারেন
+        padding: const EdgeInsets.symmetric(vertical: 10), // ভেতরের স্পেসের জন্য
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFF131B12) : const Color(0xFF243023),
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(20), // কোণাগুলো একটু বেশি রাউন্ড করলাম
           border: isSelected
-              ? Border.all(color: const Color(0xFF81C784), width: 1)
+              ? Border.all(color: const Color(0xFF81C784), width: 1.5)
               : null,
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly, // ইলিমেন্টগুলোকে সমান দূরত্বে রাখবে
           children: [
-            Icon(icon, color: const Color(0xFF81C784), size: 26),
-            const SizedBox(height: 5),
-            Text(
-              name,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.white54,
-                fontSize: 11,
-              ),
+            // আইকন সাইজ ২৬ থেকে বাড়িয়ে ৩২ করা হয়েছে
+            Icon(icon, color: const Color(0xFF81C784), size: 32),
+
+            Column(
+              children: [
+                Text(
+                  name,
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : Colors.white70,
+                    fontSize: 14, // ১১ থেকে বাড়িয়ে ১৪ করা হয়েছে
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  DateFormat.jm().format(time),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13, // ১০ থেকে বাড়িয়ে ১৩ করা হয়েছে
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
             ),
-            Text(
-              DateFormat.jm().format(time),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 6),
+
+            // নিচের স্টার আইকনটি একটু বড় করা হয়েছে
             Icon(
               isSelected ? Icons.star : Icons.star_border,
-              color: isSelected ? const Color(0xFF81C784) : Colors.white12,
-              size: 16,
+              color: isSelected ? const Color(0xFF81C784) : Colors.white24,
+              size: 20, // ১৬ থেকে বাড়িয়ে ২০ করা হয়েছে
             ),
           ],
         ),
