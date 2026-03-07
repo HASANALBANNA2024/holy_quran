@@ -5,6 +5,7 @@ import 'package:holy_quran/screens/language_ui.dart';
 import 'package:holy_quran/screens/main_drawer.dart';
 import 'package:holy_quran/screens/surah_detail_screen.dart';
 import 'package:holy_quran/themes/theme_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:holy_quran/widgets/quick_action_card.dart';
 import 'package:provider/provider.dart';
 import 'package:holy_quran/providers/qari_provider.dart';
@@ -12,6 +13,7 @@ import 'package:holy_quran/screens/qari_selection_screen.dart';
 import 'package:holy_quran/providers/view_mode_provider.dart';
 import 'package:holy_quran/providers/notification_provider.dart';
 import 'package:holy_quran/screens/notification_screen.dart';
+import 'package:holy_quran/services/notification_service.dart';
 import 'package:holy_quran/providers/alarm_provider.dart';
 import 'package:holy_quran/screens/islamic_alarm_screen.dart';
 import 'package:holy_quran/services/notification_service.dart';
@@ -26,6 +28,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  bool isNotificationEnabled = true;
   // function call to bridge of notification
   void triggerDailyGuidance(String category, String text, String surahName, int surahIdx, int ayahNum) {
     // ১. ফোনে সাউন্ডসহ নোটিফিকেশন পাঠানো
@@ -373,6 +377,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // }
 
   Widget _buildSettingsList() {
+
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
@@ -409,7 +414,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ListTile(
           title: const Text("Change Qari"),
           subtitle: Text(context.watch<QariProvider>().selectedQariName),
-          leading: const Icon(Icons.mic, color: Color(0xFF1B5E20)),
+          leading: const Icon(Icons.mic, color: Colors.green),
           onTap: () {
             Navigator.pop(context);
             Navigator.push(context, MaterialPageRoute(builder: (context) => const QariSelectionScreen()));
@@ -426,7 +431,42 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => _showViewModeDialog(context),
+        ),
 
+
+        ListTile(
+          title: const Text(
+            "Notifications",
+            style: TextStyle(fontWeight: FontWeight.w500),
+          ),
+          subtitle: Text(
+            isNotificationEnabled ? "On" : "Off",
+            style: TextStyle(color: isNotificationEnabled ? Colors.green[700] : Colors.grey),
+          ),
+          leading: Icon(
+            isNotificationEnabled ? Icons.notifications_active : Icons.notifications_off,
+            color: Colors.green, // আপনার প্রিয় ডার্ক গ্রিন কালার
+          ),
+          trailing: Switch(
+            value: isNotificationEnabled,
+            activeColor: const Color(0xFF1B5E20),
+            onChanged: (bool value) async {
+              setState(() {
+                isNotificationEnabled = value;
+              });
+
+              // সরাসরি সার্ভিস ক্লাস কল করুন (এতে হোম স্ক্রিনে আলাদা ফাংশন লাগবে না)
+              if (value == false) {
+                await NotificationService.cancelAll();
+              } else {
+                await NotificationService.scheduleAll();
+              }
+
+              // সেটিংস সেভ করার জন্য (SharedPreferences)
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.setBool('isNotificationEnabled', value);
+            },
+          ),
         ),
         SwitchListTile(
           secondary: const Icon(Icons.dark_mode, color: Colors.green),
