@@ -53,7 +53,11 @@ class _TasbihScreenState extends State<TasbihScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F7F4),
       appBar: AppBar(
-        title: const Text("Digital Tasbih", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text("Digital Tasbih", style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          fontFamily: 'Translation'
+        )),
         backgroundColor: const Color(0xFF1B5E20),
         centerTitle: true,
         elevation: 0,
@@ -84,7 +88,12 @@ class _TasbihScreenState extends State<TasbihScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 6),
                       child: ActionChip(
                         backgroundColor: Colors.white,
-                        label: Text(item['short'], style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1B5E20))),
+                        label: Text(item['short'], style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1B5E20),
+                          fontFamily: 'QuranFont'
+                        )),
                         onPressed: () => tasbih.setDhikr(item['full'], item['target']),
                       ),
                     );
@@ -103,7 +112,11 @@ class _TasbihScreenState extends State<TasbihScreen> {
                   child: Text(
                     tasbih.selectedDhikr,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1B5E20), height: 1.4),
+                    style: const TextStyle(fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1B5E20),
+                        fontFamily: 'QuranFont',
+                        height: 1.4),
                   ),
                 ),
               ),
@@ -225,7 +238,7 @@ class _TasbihScreenState extends State<TasbihScreen> {
             const Center(child: Text("Custom Counter Setup", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold))),
             const SizedBox(height: 25),
 
-            const Text("Quick Select Dhikr:", style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text("Quick Select Dhikr:", style: TextStyle(fontWeight: FontWeight.bold,)),
             const SizedBox(height: 10),
             SizedBox(
               height: 40,
@@ -234,8 +247,18 @@ class _TasbihScreenState extends State<TasbihScreen> {
                 children: provider.builtInDhikr.map((d) => Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: ActionChip(
-                    label: Text(d['short']),
-                    onPressed: () => nameCtrl.text = d['full'],
+                    label: Text(
+                      d['short'],
+                      style: const TextStyle(
+                        fontFamily: 'QuranFont', // ✅ আপনার Amiri ফন্ট
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1B5E20),
+                      ),
+                    ),
+                    onPressed: () {
+                      nameCtrl.text = d['full'];
+                    },
                     backgroundColor: Colors.green.withOpacity(0.1),
                   ),
                 )).toList(),
