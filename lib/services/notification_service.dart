@@ -1,63 +1,101 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz_data;
+import 'package:adhan/adhan.dart';
+import 'package:holy_quran/logics/prayer_logic.dart'; // আপনার প্রয়ার লজিক পাথ দিন
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
 class NotificationService {
 
-  // ১. সব নোটিফিকেশন বন্ধ করার জন্য
-  static Future<void> cancelAll() async {
-    await flutterLocalNotificationsPlugin.cancelAll();
-    print("✅ সব নোটিফিকেশন বন্ধ করা হয়েছে");
-  }
-
-  // ২. নামাজের সময় অনুযায়ী আবার সব নোটিফিকেশন সেট করার জন্য
-  static Future<void> scheduleAll() async {
-    // এখানে আপনার নামাজের সময় বের করে নোটিফিকেশন শিডিউল করার মেইন লজিক কল করবেন
-    // উদাহরণস্বরূপ:
-    // await schedulePrayerNotifications();
-    print("✅ সব নোটিফিকেশন আবার চালু করা হয়েছে");
-  }
-
-  static final _notifications = FlutterLocalNotificationsPlugin();
-
-// notification_service.dart ফাইলে এটি রিপ্লেস করুন
   static Future<void> init(Function(String?) onNotificationClick) async {
-    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const initSettings = InitializationSettings(android: androidInit);
+    // ১. টাইমজোন ডাটা লোড করা (নামাজের সময়ের জন্য জরুরি)
+    tz_data.initializeTimeZones();
 
-    await _notifications.initialize(
-      initSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse details) {
-        // এই লাইনটিই আপনার পাঠানো ফাংশনটিকে কল করবে
-        onNotificationClick(details.payload);
+    const AndroidInitializationSettings androidSettings =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    const InitializationSettings settings = InitializationSettings(
+      android: androidSettings,
+    );
+
+    // ২. নোটিফিকেশন প্লাগইন ইনিশিয়ালাইজ করা
+    await flutterLocalNotificationsPlugin.initialize(
+      settings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        // ইউজার ক্লিক করলে আপনার পাঠানো ফাংশনটি (onNotificationClick) রান করবে
+        onNotificationClick(response.payload);
       },
     );
   }
-  void _toggleNotifications(bool value) async {
-    // ১. মেমরিতে সেভ করার জন্য (SharedPreferences)
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isNotifOn', value);
-
-    // ২. নোটিফিকেশন বন্ধ বা চালু করার জন্য
-    if (value == false) {
-      await NotificationService.cancelAll(); // সব বন্ধ
-    } else {
-      await NotificationService.scheduleAll(); // আবার চালু
-    }
-  }
 
   static Future<void> showInstantNotification({
-    required String title, required String body, required String payload
+    required String title,
+    required String body,
+    required String payload,
   }) async {
-    const androidDetail = AndroidNotificationDetails(
-      'quran_guidance', 'Quran Guidance',
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      'instant_notification_channel', // চ্যানেল আইডি
+      'Instant Notifications',         // চ্যানেলের নাম
       importance: Importance.max,
       priority: Priority.high,
-      playSound: true,
-      // সাউন্ড কাস্টমাইজ করতে চাইলে এখানে sound: RawResourceAndroidNotificationSound('mysound') দিতে পারো
     );
 
-    await _notifications.show(0, title, body, const NotificationDetails(android: androidDetail), payload: payload);
+    const NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0, // নোটিফিকেশন আইডি (ইউনিক হতে হয়)
+      title,
+      body,
+      platformChannelSpecifics,
+      payload: payload,
+    );
+  }
+  static Future<void> cancelAll() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
+    print("✅ All Notifications Cancelled");
+  }
+
+  static Future<void> scheduleAll() async {
+    // ১. নামাজের সময় ডাটা নিন
+    final prayerTimes = await PrayerLogic.getPrayerTimes();
+    if (prayerTimes == null) return;
+
+    // ২. একটি লিস্ট তৈরি করুন নামাজের নাম ও সময়ের
+    Map<String, DateTime> prayers = {
+      "Fajr": prayerTimes.fajr,
+      "Dhuhr": prayerTimes.dhuhr,
+      "Asr": prayerTimes.asr,
+      "Maghrib": prayerTimes.maghrib,
+      "Isha": prayerTimes.isha,
+    };
+
+    // ৩. লুপ চালিয়ে প্রতিটি নামাজের জন্য নোটিফিকেশন সেট করুন
+    int id = 0;
+    prayers.forEach((name, time) async {
+      if (time.isAfter(DateTime.now())) {
+        await flutterLocalNotificationsPlugin.zonedSchedule(
+          id++,
+          'Prayer Time',
+          'It is time for $name',
+          tz.TZDateTime.from(time, tz.local),
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              'prayer_zone', 'Prayers',
+              importance: Importance.max,
+              priority: Priority.high,
+            ),
+          ),
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        );
+      }
+    });
+    print("✅ Prayers Scheduled");
   }
 }

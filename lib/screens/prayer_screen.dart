@@ -4,6 +4,7 @@ import 'package:adhan/adhan.dart';
 import 'package:flutter/material.dart';
 import 'package:holy_quran/logics/prayer_logic.dart';
 import 'package:intl/intl.dart';
+import 'package:holy_quran/services/notification_service.dart';
 
 class PrayerScreen extends StatefulWidget {
   const PrayerScreen({super.key});
@@ -20,13 +21,37 @@ class _PrayerScreenState extends State<PrayerScreen> {
   String? selectedName;
   DateTime? selectedTime;
 
+
+  // --- এই যে এখানে ফাংশনটি রাখবেন (build মেথডের ঠিক উপরে) ---
+  void handleNotificationClick(String payload, BuildContext context) {
+    debugPrint("নোটিফিকেশন ডাটা: $payload");
+
+    // ক্লিক করলে যা ঘটবে:
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("আপনি ক্লিক করেছেন: $payload")),
+    );
+  }
   @override
   void initState() {
     super.initState();
-    _loadData();
-    // ১ সেকেন্ড পর পর রিয়েল-টাইম কাউন্টডাউন আপডেট
+
+    // ১. অ্যাপের ফ্রেম পুরোপুরি তৈরি হওয়ার পর ডাটা লোড শুরু হবে
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+
+      // নোটিফিকেশন লিসেনার এখানে সেট করুন
+      NotificationService.init((payload) {
+        if (payload != null && mounted) {
+          handleNotificationClick(payload, context);
+        }
+      });
+    });
+
+
+
+    // ২. টাইমারটি আগের মতোই থাকবে
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_prayerTimes != null) {
+      if (_prayerTimes != null && mounted) { // mounted চেক করা নিরাপদ
         _updateCounter();
       }
     });

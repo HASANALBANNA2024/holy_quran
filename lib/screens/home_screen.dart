@@ -150,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             IconButton(
-              icon: Icon(Icons.notifications_active_outlined),
+              icon: Icon(Icons.notifications_active_outlined, color: Colors.white70),
               onPressed: () {
                 context.read<NotificationProvider>().markAsRead();
                 Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationScreen()));
@@ -174,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   Scaffold.of(context).openDrawer();
                 },
-                icon: const Icon(Icons.menu, color: Colors.white),
+                icon: const Icon(Icons.menu, color: Colors.white70),
               );
             },
           ),
@@ -245,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     indicatorColor: const Color(0xFF1B5E20),
                     labelColor: const Color(0xFF1B5E20),
                     unselectedLabelColor: Colors.grey[1000],
-                    indicatorWeight: 3,
+                    indicatorWeight: 2,
                     tabs: const [
                       Tab(text: "Surah"),
                       // Tab(text: "Juz"),

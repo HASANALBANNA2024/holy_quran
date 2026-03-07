@@ -14,9 +14,7 @@ import 'package:holy_quran/services/notification_service.dart';
 void main() async { // এখানে async যোগ করুন
   WidgetsFlutterBinding.ensureInitialized();
 
-  await NotificationService.init((payload) {
-    // এখানে আপাতত খালি ফাংশন রাখুন, কারণ আসল কাজ আমরা হোম স্ক্রিনে করছি
-  });
+  await NotificationService.init((payload) {});
 
   runApp(
     MultiProvider(
