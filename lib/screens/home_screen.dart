@@ -9,6 +9,7 @@ import 'package:holy_quran/widgets/quick_action_card.dart';
 import 'package:provider/provider.dart';
 import 'package:holy_quran/providers/qari_provider.dart';
 import 'package:holy_quran/screens/qari_selection_screen.dart';
+import 'package:holy_quran/providers/view_mode_provider.dart';
 import 'package:holy_quran/providers/alarm_provider.dart';
 import 'package:holy_quran/screens/islamic_alarm_screen.dart';
 
@@ -331,6 +332,19 @@ class _HomeScreenState extends State<HomeScreen> {
             Navigator.push(context, MaterialPageRoute(builder: (context) => const QariSelectionScreen()));
           },
         ),
+        // show and hide of arabic and translation
+        ListTile(
+          leading: const Icon(Icons.remove_red_eye, color: Colors.green),
+          title: const Text("Display Options"),
+          subtitle: Text(
+              context.watch<ViewModeProvider>().mode == 0
+                  ? "Showing Both"
+                  : (context.watch<ViewModeProvider>().mode == 1 ? "Arabic Only" : "Translation Only")
+          ),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => _showViewModeDialog(context),
+
+        ),
         SwitchListTile(
           secondary: const Icon(Icons.dark_mode, color: Colors.green),
           title: const Text("Dark Mode"),
@@ -365,4 +379,54 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(_SliverAppBarDelegate oldDelegate) => false;
+}
+
+
+// show view mode Dialog Message Widget
+void _showViewModeDialog(BuildContext context) {
+  // এখানে context.read ব্যবহার করা হয়েছে কারণ শুধু ডেটা পাঠাচ্ছি, লিসেন করার দরকার নেই
+  final provider = Provider.of<ViewModeProvider>(context, listen: false);
+
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: const Text("Display Options", style: TextStyle(fontWeight: FontWeight.bold)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          RadioListTile<int>(
+            title: const Text("Both (Arabic & Translation)"),
+            value: 0,
+            groupValue: provider.mode,
+            activeColor: Colors.green,
+            onChanged: (val) {
+              provider.setViewMode(val!);
+              Navigator.pop(context);
+            },
+          ),
+          RadioListTile<int>(
+            title: const Text("Arabic Only"),
+            value: 1,
+            groupValue: provider.mode,
+            activeColor: Colors.green,
+            onChanged: (val) {
+              provider.setViewMode(val!);
+              Navigator.pop(context);
+            },
+          ),
+          RadioListTile<int>(
+            title: const Text("Translation Only"),
+            value: 2,
+            groupValue: provider.mode,
+            activeColor: Colors.green,
+            onChanged: (val) {
+              provider.setViewMode(val!);
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    ),
+  );
 }
