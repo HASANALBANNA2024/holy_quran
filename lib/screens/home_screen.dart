@@ -57,7 +57,9 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
         ),
-        body: NestedScrollView(
+
+        //body Started
+        body:  NestedScrollView(
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
               SliverToBoxAdapter(
@@ -72,9 +74,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           "Assalamu Alaikum",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[800],
-                            fontFamily: 'Translation'
+                              fontSize: 16,
+                              color: Colors.grey[800],
+                              fontFamily: 'Translation'
                           ),
                         ),
                       ),
@@ -84,10 +86,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           "Learn Quran Every Day",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1B5E20),
-                            fontFamily: 'Translation'
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1B5E20),
+                              fontFamily: 'Translation'
                           ),
                         ),
                       ),
@@ -100,21 +102,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
+
               SliverPersistentHeader(
                 pinned: true,
                 delegate: _SliverAppBarDelegate(
                   TabBar(
                     // label style
                     labelStyle: const TextStyle(
-                      fontSize: 16,
-                      fontFamily: 'Translation',
-                      fontWeight: FontWeight.w500
+                        fontSize: 16,
+                        fontFamily: 'Translation',
+                        fontWeight: FontWeight.w500
                     ),
                     // unselected label styel
                     unselectedLabelStyle: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.normal,
-                      fontFamily: 'Translation'
+                        fontSize: 15,
+                        fontWeight: FontWeight.normal,
+                        fontFamily: 'Translation'
 
                     ),
                     indicatorColor: const Color(0xFF1B5E20),
@@ -139,6 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
+        //body Ended
       ),
     );
   }
@@ -206,16 +210,6 @@ class _HomeScreenState extends State<HomeScreen> {
               fontFamily: 'Translation',
             ),
           ),
-          // trailing: Text(
-          //   surah['name'] ?? "", // ✅ আরবী নাম
-          //   textAlign: TextAlign.right, // আরবি ডান দিক থেকে শুরু হয়
-          //   style: const TextStyle(
-          //     color: Color(0xFF1B5E20),
-          //     fontSize: 24,
-          //     fontFamily: 'QuranFont',
-          //     height: 1.5, // ✅ এটি খুবই গুরুত্বপূর্ণ (জের-জবর যেন স্পষ্ট থাকে)
-          //   ),
-          // ),
           trailing: Directionality(
             textDirection: TextDirection.rtl, // আরবি লেখার জন্য এটি যোগ করুন
             child: Text(

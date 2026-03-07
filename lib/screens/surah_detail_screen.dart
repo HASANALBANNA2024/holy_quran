@@ -370,6 +370,8 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
     );
   }
 
+
+
   Widget _buildSurahHeaderCard(Map<String, dynamic> surah) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),

@@ -63,6 +63,8 @@ flutter:
     - assets/images/compass_dial.png
     - assets/images/qibla_needle.png
     - assets/images/surah_icon_image.png
+    - assets/images/home_screen_background_image.jpg
+    - assets/images/surah_detail_screen_background_image.jpg
     # শুধুমাত্র ফোল্ডার পাথ দিলে অনেক সময় সব ফাইল পায় না, তাই মেইন ফাইলগুলো এভাবে দিন
     - assets/data/quran_arabic.json
     - assets/data/en_quran.json
