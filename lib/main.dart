@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:holy_quran/providers/alarm_provider.dart';
 import 'package:holy_quran/providers/bookmark_provider.dart';
+import 'package:holy_quran/providers/notification_provider.dart';
 import 'package:holy_quran/providers/qari_provider.dart';
 import 'package:holy_quran/providers/quran_provider.dart'; // 🔹 এটি মিসিং ছিল
 import 'package:holy_quran/providers/tasbih_provider.dart';
@@ -8,10 +9,14 @@ import 'package:holy_quran/providers/view_mode_provider.dart';
 import 'package:holy_quran/screens/splash_screen.dart';
 import 'package:holy_quran/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:holy_quran/services/notification_service.dart';
 
-void main() {
-  // ১. ফ্লাটার ইঞ্জিন এবং প্লাগইনগুলো লোড হওয়া নিশ্চিত করা
+void main() async { // এখানে async যোগ করুন
   WidgetsFlutterBinding.ensureInitialized();
+
+  await NotificationService.init((payload) {
+    // এখানে আপাতত খালি ফাংশন রাখুন, কারণ আসল কাজ আমরা হোম স্ক্রিনে করছি
+  });
 
   runApp(
     MultiProvider(
@@ -21,7 +26,8 @@ void main() {
         ChangeNotifierProvider(create: (_) => BookmarkProvider()),
         ChangeNotifierProvider(create: (_) => QariProvider()),
         ChangeNotifierProvider(create: (_) => TasbihProvider()),
-        ChangeNotifierProvider(create: (_) => ViewModeProvider())
+        ChangeNotifierProvider(create: (_) => ViewModeProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider())
         // future update feature this
         // ChangeNotifierProvider(create: (_) =>AlarmProvider())
         // ChangeNotifierProvider(create: (_) => LastReadProvider()),

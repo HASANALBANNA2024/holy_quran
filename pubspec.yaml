@@ -1,59 +1,51 @@
 name: holy_quran
 description: "A new Flutter project."
-
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-
-
+publish_to: 'none'
 
 version: 1.0.0+1
 
 environment:
   sdk: ^3.10.8
 
-
 dependencies:
   flutter:
     sdk: flutter
 
-  # কোর ফাংশনালিটি
+  # UI & Design
+  cupertino_icons: ^1.0.8
+
+  # কোর ফাংশনালিটি (Adhan, Location, Time)
   adhan: ^2.0.0+1
-  geolocator: ^10.1.0
-  intl: ^0.18.0
-  http: ^1.2.0
+  geolocator: ^13.0.2
+  intl: ^0.19.0
+  http: ^1.2.2
 
   # লোকাল ডাটাবেস ও স্টোরেজ
-  sqflite: ^2.3.0
-  path: ^1.8.3
-  shared_preferences: ^2.2.2  # এখানে অতিরিক্ত টেক্সট সরানো হয়েছে
+  sqflite: ^2.3.3
+  path: ^1.9.0
+  shared_preferences: ^2.3.5
 
   # অডিও এবং স্টেট ম্যানেজমেন্ট
+  just_audio: ^0.9.42
+  provider: ^6.1.2
   connectivity_plus: ^6.1.0
-  just_audio: ^0.9.36
-  provider: ^6.1.5+1
 
-  # শেয়ারিং ফিচার
+  # নোটিফিকেশন সার্ভিস
+  # নোট: আমি লেটেস্ট স্ট্যাবল ভার্সন ১৭.২.২ রেখেছি, ২১.০.০ ভার্সনটি অনেক সময় কম্পাটিবিলিটি ইস্যু করে
+  flutter_local_notifications: ^17.2.2
+
+  # শেয়ারিং ও ইউটিলিটি ফিচার
   share_plus: ^10.1.4
-  #payment gateway open
-  url_launcher: ^6.1.14
-  webview_flutter: ^4.4.2
-  flutter_dotenv: ^5.1.0
-  in_app_review: ^2.0.0
-  package_info_plus: ^8.0.0
-
-
-
-
-
-  cupertino_icons: ^1.0.8
+  url_launcher: ^6.3.1
+  webview_flutter: ^4.10.0
+  flutter_dotenv: ^5.2.1
+  in_app_review: ^2.0.9
+  package_info_plus: ^8.1.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-
-
   flutter_lints: ^6.0.0
-
 
 flutter:
   uses-material-design: true
@@ -64,9 +56,8 @@ flutter:
     - assets/images/compass_dial.png
     - assets/images/qibla_needle.png
     - assets/images/surah_icon_image.png
-    - assets/images/home_screen_background_image.jpg
-    - assets/images/surah_detail_screen_background_image.jpg
-    # শুধুমাত্র ফোল্ডার পাথ দিলে অনেক সময় সব ফাইল পায় না, তাই মেইন ফাইলগুলো এভাবে দিন
+
+    # JSON Data Files
     - assets/data/quran_arabic.json
     - assets/data/en_quran.json
     - assets/data/bn_quran.json
@@ -79,9 +70,9 @@ flutter:
     - assets/data/ur_quran.json
     - assets/data/zh_quran.json
 
-    # sounds
-    - assets/sounds/click.ogg      # ওজিজি ফরম্যাট
-    - assets/sounds/complete.wav   # ওয়েভ ফরম্যাট
+    # Sounds
+    - assets/sounds/click.ogg
+    - assets/sounds/complete.wav
 
   fonts:
     - family: QuranFont

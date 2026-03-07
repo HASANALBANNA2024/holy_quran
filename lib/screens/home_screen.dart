@@ -10,8 +10,12 @@ import 'package:provider/provider.dart';
 import 'package:holy_quran/providers/qari_provider.dart';
 import 'package:holy_quran/screens/qari_selection_screen.dart';
 import 'package:holy_quran/providers/view_mode_provider.dart';
+import 'package:holy_quran/providers/notification_provider.dart';
+import 'package:holy_quran/screens/notification_screen.dart';
 import 'package:holy_quran/providers/alarm_provider.dart';
 import 'package:holy_quran/screens/islamic_alarm_screen.dart';
+import 'package:holy_quran/services/notification_service.dart';
+import 'package:holy_quran/widgets/guidance_overlay_card.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -22,6 +26,67 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // function call to bridge of notification
+  void triggerDailyGuidance(String category, String text, String surahName, int surahIdx, int ayahNum) {
+    // ১. ফোনে সাউন্ডসহ নোটিফিকেশন পাঠানো
+    NotificationService.showInstantNotification(
+        title: category,
+        body: text,
+        payload: "$category|$text|$surahName|$surahIdx|$ayahNum"
+    );
+
+    // ২. অ্যাপের ইনবক্সে সেভ করা
+    Provider.of<NotificationProvider>(context, listen: false).addNotification(
+        NotificationModel(
+          id: DateTime.now().toString(),
+          category: category,
+          text: text,
+          surahName: surahName,
+          surahIndex: surahIdx,
+          ayahNumber: ayahNum,
+          time: DateTime.now(),
+        )
+    );
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    // অ্যাপ ওপেন হওয়ার সময় নোটিফিকেশন লিসেনার সেট করা
+    // এটি ২ নম্বর সার্ভিসের init মেথডকে কল করবে
+    NotificationService.init((payload) {
+      if (payload != null && mounted) {
+        // ক্লিক করলে আপনার সেই কাঙ্ক্ষিত ফাংশনটি ট্রিগার হবে
+        handleNotificationClick(payload, context);
+      }
+    });
+  }
+
+  // নোটিফিকেশন ক্লিক হ্যান্ডেল করার ফাংশন
+  void handleNotificationClick(String payload, BuildContext context) {
+    List<String> parts = payload.split('|');
+
+    // ৫ নম্বর ফিচারের সেই সুন্দর ওভারলে কার্ডটি এখানে কল হবে
+    showGuidanceOverlay(
+      context: context,
+      category: parts[0],
+      translation: parts[1],
+      surahName: parts[2],
+      ayahNumber: int.parse(parts[3]),
+      onTap: () {
+        Navigator.pop(context); // কার্ড বন্ধ করা
+
+        // এখানে সরাসরি সূরা ডিটেইলসে যাওয়ার লজিক দিন
+        // উদাহরণ:
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => SurahDetails(index: parts[4])));
+      },
+    );
+  }
+
+
+  //
 
    @override
   Widget build(BuildContext context) {
@@ -80,6 +145,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 showSearch(context: context, delegate: QuranSearch());
               },
             ),
+            IconButton(
+              icon: Icon(Icons.notifications_active_outlined),
+              onPressed: () {
+                context.read<NotificationProvider>().markAsRead();
+                Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationScreen()));
+              },
+            ),
+            if (context.watch<NotificationProvider>().unreadCount > 0)
+              Positioned(
+                right: 10, top: 10,
+                child: Container(
+                  padding: EdgeInsets.all(2),
+                  decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(10)),
+                  constraints: BoxConstraints(minWidth: 16, minHeight: 16),
+                  child: Text('${context.watch<NotificationProvider>().unreadCount}',
+                      style: TextStyle(color: Colors.white, fontSize: 10), textAlign: TextAlign.center),
+                ),
+              ),
           ],
           leading: Builder(
             builder: (context) {
