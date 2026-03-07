@@ -180,13 +180,15 @@ class _HomeScreenState extends State<HomeScreen> {
             alignment: Alignment.center,
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: NetworkImage(
-                  "https://img.icons8.com/ios/50/2e7d32/star--v1.png",
+                image: AssetImage(
+                  "assets/images/surah_icon_image.png",
                 ),
                 opacity: 0.3,
               ),
             ),
-            child: Text("${surah['number'] ?? index + 1}"),
+            child: Center(
+              child: Text("${surah['number'] ?? index + 1}"),
+            )
           ),
           title: Text(
             surah['englishName'] ?? "Unknown", // ✅ ইংরেজি নাম দেখাবে
@@ -204,12 +206,25 @@ class _HomeScreenState extends State<HomeScreen> {
               fontFamily: 'Translation',
             ),
           ),
-          trailing: Text(
-            surah['name'] ?? "", // ✅ আরবী নাম
-            style: const TextStyle(
-              color: Color(0xFF1B5E20),
-              fontSize: 24,
-              fontFamily: 'QuranFont',
+          // trailing: Text(
+          //   surah['name'] ?? "", // ✅ আরবী নাম
+          //   textAlign: TextAlign.right, // আরবি ডান দিক থেকে শুরু হয়
+          //   style: const TextStyle(
+          //     color: Color(0xFF1B5E20),
+          //     fontSize: 24,
+          //     fontFamily: 'QuranFont',
+          //     height: 1.5, // ✅ এটি খুবই গুরুত্বপূর্ণ (জের-জবর যেন স্পষ্ট থাকে)
+          //   ),
+          // ),
+          trailing: Directionality(
+            textDirection: TextDirection.rtl, // আরবি লেখার জন্য এটি যোগ করুন
+            child: Text(
+              surah['name'] ?? "",
+              style: const TextStyle(
+                color: Color(0xFF1B5E20),
+                fontSize: 24,
+                fontFamily: 'QuranFont',
+              ),
             ),
           ),
           onTap: () {
