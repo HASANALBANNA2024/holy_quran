@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:holy_quran/logics/quran_search.dart';
 import 'package:holy_quran/providers/quran_provider.dart';
@@ -18,6 +19,7 @@ import 'package:holy_quran/providers/alarm_provider.dart';
 import 'package:holy_quran/screens/islamic_alarm_screen.dart';
 import 'package:holy_quran/services/notification_service.dart';
 import 'package:holy_quran/widgets/guidance_overlay_card.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -53,21 +55,52 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  @override
+  // ১. ক্লাসের শুরুতে এই ভেরিয়েবলগুলো থাকতে হবে (নাহলে লাল দাগ আসবে)
+  Timer? _timer;
+// PrayerTimes বা আপনার ডাটা টাইপ অনুযায়ী ভেরিয়েবল
+  var _prayerTimes;
 
   @override
   void initState() {
     super.initState();
 
-    // অ্যাপ ওপেন হওয়ার সময় নোটিফিকেশন লিসেনার সেট করা
-    // এটি ২ নম্বর সার্ভিসের init মেথডকে কল করবে
-    NotificationService.init((payload) {
-      if (payload != null && mounted) {
-        // ক্লিক করলে আপনার সেই কাঙ্ক্ষিত ফাংশনটি ট্রিগার হবে
-        handleNotificationClick(payload, context);
-      }
+    // WidgetsBinding এর ভেতরে সব লজিক রাখুন
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+
+      // নোটিফিকেশন পারমিশন ও সার্ভিস (আগের কোড)
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          ?.requestNotificationsPermission();
+
+      NotificationService.init((payload) {
+        if (payload != null && mounted) {
+          handleNotificationClick(payload, context);
+        }
+      });
+
+      // ৩. ডাটা লোড করার ফাংশন (লাল দাগ থাকলে নিশ্চিত করুন এই নামে মেথড আছে)
+      _loadData();
+
+      // টাইমারটি এখানে সেট করা সবচেয়ে নিরাপদ
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (_prayerTimes != null && mounted) {
+          _updateCounter();
+        }
+      });
     });
   }
 
+// ৪. নিশ্চিত করুন এই ফাংশনগুলো আপনার ক্লাসে আছে (নাহলে লাল দাগ যাবে না)
+  void _loadData() {
+    // ডাটা লোড করার কোড
+  }
+
+  void _updateCounter() {
+    setState(() {
+      // কাউন্টার আপডেট করার কোড
+    });
+  }
   // নোটিফিকেশন ক্লিক হ্যান্ডেল করার ফাংশন
   void handleNotificationClick(String payload, BuildContext context) {
     List<String> parts = payload.split('|');
@@ -126,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
      // // alarm function call end
      //
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         drawer: const MainDrawer(),
         appBar: AppBar(
@@ -229,26 +262,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 pinned: true,
                 delegate: _SliverAppBarDelegate(
                   TabBar(
-                    // label style
                     labelStyle: const TextStyle(
                         fontSize: 16,
                         fontFamily: 'Translation',
                         fontWeight: FontWeight.w500
                     ),
-                    // unselected label styel
                     unselectedLabelStyle: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.normal,
                         fontFamily: 'Translation'
-
                     ),
                     indicatorColor: const Color(0xFF1B5E20),
                     labelColor: const Color(0xFF1B5E20),
-                    unselectedLabelColor: Colors.grey[1000],
+                    unselectedLabelColor: Colors.grey[600], // grey[1000] হয় না, ৬০০ বা ৭০০ দিন
                     indicatorWeight: 2,
                     tabs: const [
                       Tab(text: "Surah"),
-                      // Tab(text: "Juz"),
+                      // Juz কমেন্ট করা আছে, তাই এখানে এখন ২টি ট্যাব
                       Tab(text: "Settings"),
                     ],
                   ),

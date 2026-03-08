@@ -31,7 +31,7 @@ class QuranProvider extends ChangeNotifier {
 
   Future<void> initQuran() async {
     _isLoading = true;
-    notifyListeners();
+    Future.microtask(() => notifyListeners());
 
     try {
       // ১. আরবী ফাইল লোড
@@ -53,7 +53,8 @@ class QuranProvider extends ChangeNotifier {
       _isLoading = false;
       print("❌ Error loading data: $e");
     }
-    notifyListeners();
+    // ডাটা লোড শেষে UI আপডেট করার নিরাপদ উপায়
+    Future.microtask(() => notifyListeners());
   }
 
   List<dynamic> _processArabicData(Map<String, dynamic> json) {
