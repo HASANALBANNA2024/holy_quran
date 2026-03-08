@@ -51,7 +51,7 @@ class _TasbihScreenState extends State<TasbihScreen> {
     bool isCompleted = tasbih.target > 0 && tasbih.count == tasbih.target;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F7F4),
+      backgroundColor: Color(0xFFF4F7F4),
       appBar: AppBar(
         title: const Text("Digital Tasbih", style: TextStyle(
             color: Colors.white,

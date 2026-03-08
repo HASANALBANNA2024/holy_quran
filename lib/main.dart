@@ -40,17 +40,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     // ৩. থিম প্রোভাইডার ওয়াচ করা
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return MaterialApp(
       title: "Al Quran",
       debugShowCheckedModeBanner: false,
+
+      // ✅ এটি এখন সরাসরি প্রোভাইডার থেকে সুইচ অনুযায়ী মোড বদলাবে
+      themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+
+      // ✅ প্রোভাইডারের কাস্টম থিমগুলো এখানে লোড করা হয়েছে
       theme: themeProvider.lightTheme,
       darkTheme: themeProvider.darkTheme,
-      themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: const SplashScreen(), // ৪. অ্যাপ স্প্ল্যাশ স্ক্রিন থেকে শুরু হবে
+
+      home: const SplashScreen(),
     );
   }
 }

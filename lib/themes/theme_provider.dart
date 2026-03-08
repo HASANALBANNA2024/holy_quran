@@ -4,16 +4,17 @@ class ThemeProvider extends ChangeNotifier {
   bool _isDarkMode = false;
   bool get isDarkMode => _isDarkMode;
 
-  // 🔹 আপনার পছন্দের সফট ডার্ক থিম (Slate Blue/Charcoal)
+  // 🌙 আপনার পছন্দের সফট ডার্ক থিম (Slate Blue/Charcoal)
   ThemeData get darkTheme => ThemeData(
+    useMaterial3: true,
     brightness: Brightness.dark,
     primaryColor: const Color(0xFF2E7D32), // গাঢ় সবুজ
-    // এটি একদম কালো নয়, চোখের জন্য আরামদায়ক ডার্ক শেড
     scaffoldBackgroundColor: const Color(0xFF1B262C),
 
     appBarTheme: const AppBarTheme(
       backgroundColor: Color(0xFF0F4C75),
       elevation: 0,
+      centerTitle: true,
       titleTextStyle: TextStyle(
         fontFamily: 'QuranFont',
         fontSize: 20,
@@ -21,36 +22,52 @@ class ThemeProvider extends ChangeNotifier {
       ),
     ),
 
-    // কার্ড বা লিস্ট টাইলের জন্য হালকা আলাদা শেড
-    cardColor: const Color(0xFF3282B8).withOpacity(0.1),
+    // ✅ কার্ড থিম ঠিক করা হয়েছে (CardThemeData ব্যবহার করে)
+    cardTheme: CardThemeData(
+      color: const Color(0xFF3282B8).withOpacity(0.1),
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    ),
 
     fontFamily: 'QuranFont',
     textTheme: const TextTheme(
-      // ডার্ক মোডে টেক্সটগুলো হালকা অফ-হোয়াইট বা হালকা আকাশী দিলে ভালো দেখায়
-      bodyLarge: TextStyle(color: Color(0xFFBBE1FA)),
+      displayLarge: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      titleLarge: TextStyle(color: Colors.white),
+      bodyLarge: TextStyle(color: Color(0xFFBBE1FA)), // হালকা আকাশী
       bodyMedium: TextStyle(color: Colors.white70),
     ),
   );
 
-  // 🔹 লাইট মোড থিম
+  // ☀️ লাইট মোড থিম
   ThemeData get lightTheme => ThemeData(
+    useMaterial3: true,
     brightness: Brightness.light,
     primaryColor: const Color(0xFF1B5E20),
     scaffoldBackgroundColor: Colors.white,
+
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.white,
       elevation: 0,
+      centerTitle: true,
+      iconTheme: IconThemeData(color: Color(0xFF1B5E20)),
       titleTextStyle: TextStyle(
         fontFamily: 'QuranFont',
         fontSize: 20,
         color: Color(0xFF1B5E20),
       ),
     ),
+
+    cardTheme: CardThemeData(
+      color: Colors.grey[100],
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    ),
+
     fontFamily: 'QuranFont',
   );
 
   void toggleTheme() {
     _isDarkMode = !_isDarkMode;
-    notifyListeners();
+    notifyListeners(); // এটিই UI-কে জানাবে যে কালার বদলাতে হবে
   }
 }
