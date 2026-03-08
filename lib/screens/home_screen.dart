@@ -100,24 +100,45 @@ class _HomeScreenState extends State<HomeScreen> {
       await quranProvider.initQuran();
     }
 
-    // ২. ডাটা লোড হওয়ার পর নোটিফিকেশন শিডিউল করা
+    // ২. ডাটা লোড হওয়ার পর নোটিফিকেশন শিডিউল করা
     if (isNotificationEnabled) {
-      // এই মেথডটি আপনার NotificationService ক্লাসে থাকতে হবে
       await NotificationService.scheduleAll();
       print("✅ Notifications scheduled successfully!");
     }
-    // ডাটা লোড হওয়ার ২ সেকেন্ড পর ওভারলে কল
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        showSadakahOverlay(
+
+    // ৩. সাদাকাহ ওভারলে সাইকেল লজিক
+    final prefs = await SharedPreferences.getInstance();
+    String? lastActionStr = prefs.getString('last_sadakah_action');
+    int nextShowDays = prefs.getInt('next_show_days') ?? 0;
+
+    bool shouldShow = false;
+
+    if (lastActionStr == null) {
+      // যদি আগে কখনো ক্লিক না করে থাকে (প্রথমবার অ্যাপ ওপেন)
+      shouldShow = true;
+    } else {
+      DateTime lastActionDate = DateTime.parse(lastActionStr);
+      DateTime today = DateTime.now();
+      int differenceInDays = today.difference(lastActionDate).inDays;
+
+      // যদি নির্ধারিত দিন (৭ বা ২১) পার হয়ে যায়
+      if (differenceInDays >= nextShowDays) {
+        shouldShow = true;
+      }
+    }
+
+    // ৪. শর্ত পূরণ হলে ২ সেকেন্ড পর ওভারলে কল
+    if (shouldShow) {
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted && quranProvider.translations.isNotEmpty) {
+          showSadakahOverlay(
             context,
             quranProvider.currentLang,
             quranProvider.translations,
-        );
-      }
-    });
-
-
+          );
+        }
+      });
+    }
   }
 
 
