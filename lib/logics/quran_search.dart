@@ -1,20 +1,15 @@
-// lib/logics/quran_search.dart
-
 import 'package:flutter/material.dart';
 import 'package:holy_quran/screens/surah_detail_screen.dart';
 import 'package:provider/provider.dart';
-
 import '../providers/quran_provider.dart';
 
 class QuranSearch extends SearchDelegate {
-  // ডাটা স্ট্যাটিক রাখা হয়েছে যাতে স্ক্রিন রিলোড হলেও না হারায়
   static List<Map<String, dynamic>> _searchHistory = [];
-  static Map<int, int> _searchCountMap =
-      {}; // কোন সূরা কতবার সার্চ হয়েছে তা রাখার জন্য
+  static Map<int, int> _searchCountMap = {};
   static List<Map<String, dynamic>> _popularSurahs = [];
 
   @override
-  String get searchFieldLabel => "Search Surah...";
+  String get searchFieldLabel => "Search Surah or Ayah...";
 
   @override
   ThemeData appBarTheme(BuildContext context) {
@@ -69,7 +64,7 @@ class QuranSearch extends SearchDelegate {
   Widget _buildBody(BuildContext context) {
     final quran = Provider.of<QuranProvider>(context, listen: false);
 
-    if (quran.surahs == null || quran.surahs!.isEmpty) {
+    if (quran.surahs.isEmpty) {
       return const Center(
         child: CircularProgressIndicator(color: Color(0xFF81C784)),
       );
@@ -80,39 +75,96 @@ class QuranSearch extends SearchDelegate {
     }
 
     final searchTerm = query.toLowerCase().trim();
-    final results = quran.surahs!.where((surah) {
+
+    // ১. সূরা ফিল্টার (আগের লজিক)
+    final surahResults = quran.surahs.where((surah) {
       final enName = (surah['englishName'] ?? '').toString().toLowerCase();
-      final arName = (surah['arabicName'] ?? surah['name'] ?? '').toString();
+      final arName = (surah['name'] ?? '').toString();
       return enName.contains(searchTerm) || arName.contains(searchTerm);
     }).toList();
 
-    if (results.isEmpty) {
+    // ২. আয়াতের ভেতর ফিল্টার (ইউজারের সিলেক্ট করা ল্যাঙ্গুয়েজ অনুযায়ী)
+    List<Map<String, dynamic>> ayahResults = [];
+    final currentTranslations = quran.translations; // প্রোভাইডার থেকে বর্তমান অনুবাদ
+
+    for (var surah in currentTranslations) {
+      final List ayahs = surah['ayahs'] ?? [];
+      for (var ayah in ayahs) {
+        if (ayah['text'].toString().toLowerCase().contains(searchTerm)) {
+          ayahResults.add({
+            'surahIndex': surah['number'] - 1,
+            'ayahNumber': ayah['number'],
+            'text': ayah['text'],
+            'surahName': quran.surahs[surah['number'] - 1]['englishName'],
+          });
+        }
+      }
+    }
+
+    if (surahResults.isEmpty && ayahResults.isEmpty) {
       return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.search_off, color: Colors.white38, size: 50),
             SizedBox(height: 10),
-            Text("No surah found", style: TextStyle(color: Colors.white38)),
+            Text("No results found", style: TextStyle(color: Colors.white38)),
           ],
         ),
       );
     }
 
-    return ListView.builder(
-      itemCount: results.length,
-      itemBuilder: (ctx, index) {
-        return _buildTile(context, results[index]);
+    return ListView(
+      children: [
+        if (surahResults.isNotEmpty) ...[
+          _buildSectionTitle("Surahs"),
+          ...surahResults.map((surah) => _buildTile(context, surah)),
+        ],
+        if (ayahResults.isNotEmpty) ...[
+          _buildSectionTitle("Ayahs (${quran.currentLang.toUpperCase()})"),
+          ...ayahResults.take(30).map((ayah) => _buildAyahTile(context, ayah)),
+        ],
+      ],
+    );
+  }
+
+  // আয়াতের জন্য আলাদা টাইল উইজেট
+  Widget _buildAyahTile(BuildContext context, Map<String, dynamic> ayah) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      leading: const Icon(Icons.format_align_left, color: Color(0xFF81C784), size: 18),
+      title: Text(
+        ayah['text'],
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(color: Colors.white, fontSize: 14),
+      ),
+      subtitle: Text(
+        "${ayah['surahName']} : Ayah ${ayah['ayahNumber']}",
+        style: const TextStyle(color: Colors.white38, fontSize: 11),
+      ),
+      onTap: () {
+        close(context, null);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SurahDetailScreen(
+              surahIndex: ayah['surahIndex'],
+              surahName: ayah['surahName'],
+              initialAyahIndex: ayah['ayahNumber'] - 1,
+            ),
+          ),
+        );
       },
     );
   }
 
+  // আপনার আগের বাকি ফাংশনগুলো (_buildHome, _buildSectionTitle, _buildTile) এখানে হুবহু থাকবে
   Widget _buildHome(BuildContext context) {
     return StatefulBuilder(
       builder: (context, setState) {
         return ListView(
           children: [
-            // Recent Searches (সর্বোচ্চ ৫টি)
             if (_searchHistory.isNotEmpty) ...[
               _buildSectionTitle(
                 "Recent Searches",
@@ -123,16 +175,13 @@ class QuranSearch extends SearchDelegate {
                 },
               ),
               ..._searchHistory.map(
-                (surah) =>
-                    _buildTile(context, surah, onSearch: () => setState(() {})),
+                    (surah) => _buildTile(context, surah, onSearch: () => setState(() {})),
               ),
             ],
-
-            // Popular Surahs (সর্বোচ্চ ৩টি, যারা ৩ বারের বেশি সার্চ হয়েছে)
             if (_popularSurahs.isNotEmpty) ...[
               _buildSectionTitle("Popular Surahs"),
               ..._popularSurahs.map(
-                (surah) => _buildTile(context, surah, isPopular: true),
+                    (surah) => _buildTile(context, surah, isPopular: true),
               ),
             ],
           ],
@@ -147,119 +196,53 @@ class QuranSearch extends SearchDelegate {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              color: Color(0xFF81C784),
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
-          ),
+          Text(title, style: const TextStyle(color: Color(0xFF81C784), fontWeight: FontWeight.bold, fontSize: 13)),
           if (onClear != null)
-            TextButton(
-              onPressed: onClear,
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 4,
-                ),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                foregroundColor: Colors.white38,
-              ),
-              child: const Text(
-                "Clear All",
-                style: TextStyle(
-                  fontSize: 12,
-                  decoration: TextDecoration.underline,
-                ),
-              ),
+            InkWell(
+              onTap: onClear,
+              child: const Text("Clear All", style: TextStyle(color: Colors.white38, fontSize: 12, decoration: TextDecoration.underline)),
             ),
         ],
       ),
     );
   }
 
-  Widget _buildTile(
-    BuildContext context,
-    Map<String, dynamic> surah, {
-    bool isPopular = false,
-    VoidCallback? onSearch,
-  }) {
-    final int surahId = surah['number'] ?? surah['id'] ?? 0;
+  Widget _buildTile(BuildContext context, Map<String, dynamic> surah, {bool isPopular = false, VoidCallback? onSearch}) {
+    final int surahId = surah['number'] ?? 0;
     final String enName = surah['englishName'] ?? 'Unknown';
-    final int totalAyahs = surah['numberOfAyahs'] ?? surah['totalAyahs'] ?? 0;
-    final String arName = surah['arabicName'] ?? surah['name'] ?? '';
+    final int totalAyahs = surah['numberOfAyahs'] ?? 0;
+    final String arName = surah['name'] ?? '';
 
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      leading: Container(
-        width: 40,
-        height: 40,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: const Color(0xFF81C784).withOpacity(0.1),
-          shape: BoxShape.circle,
-        ),
-        child: Text(
-          "$surahId",
-          style: const TextStyle(
-            color: Color(0xFF81C784),
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
-        ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      leading: CircleAvatar(
+        radius: 18,
+        backgroundColor: const Color(0xFF81C784).withOpacity(0.1),
+        child: Text("$surahId", style: const TextStyle(color: Color(0xFF81C784), fontSize: 12, fontWeight: FontWeight.bold)),
       ),
-      title: Text(
-        enName,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      subtitle: Text(
-        '$totalAyahs Ayahs',
-        style: const TextStyle(color: Colors.white38, fontSize: 13),
-      ),
-      trailing: Text(
-        arName,
-        textAlign: TextAlign.right,
-        style: const TextStyle(
-          color: Color(0xFF81C784),
-          fontSize: 22,
-          fontFamily: 'Scheherazade',
-          fontWeight: FontWeight.bold,
-        ),
-      ),
+      title: Text(enName, style: const TextStyle(color: Colors.white, fontSize: 16)),
+      subtitle: Text('$totalAyahs Ayahs', style: const TextStyle(color: Colors.white38, fontSize: 12)),
+      trailing: Text(arName, style: const TextStyle(color: Color(0xFF81C784), fontSize: 18, fontWeight: FontWeight.bold)),
       onTap: () {
-        // ১. সার্চ কাউন্ট বাড়ানো লজিক
         _searchCountMap[surahId] = (_searchCountMap[surahId] ?? 0) + 1;
-
-        // ২. যদি ৩ বার সার্চ হয় তবে পপুলারে অ্যাড করা
         if (_searchCountMap[surahId] == 3) {
-          if (!_popularSurahs.any((e) => (e['number'] ?? e['id']) == surahId)) {
+          if (!_popularSurahs.any((e) => e['number'] == surahId)) {
             _popularSurahs.add(surah);
             if (_popularSurahs.length > 3) _popularSurahs.removeAt(0);
           }
         }
-
-        // ৩. রিসেন্ট সার্চে অ্যাড করা (সর্বোচ্চ ৫টি)
-        _searchHistory.removeWhere((e) => (e['number'] ?? e['id']) == surahId);
+        _searchHistory.removeWhere((e) => e['number'] == surahId);
         _searchHistory.insert(0, surah);
         if (_searchHistory.length > 5) _searchHistory.removeLast();
 
-        // ৪. সার্চ বার বন্ধ করা
         close(context, null);
-
-        // ✅ ৫. সূরা ডিটেইল স্ক্রিনে নিয়ে যাওয়া (সরাসরি পুশ লজিক)
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => SurahDetailScreen(
-              surahIndex: surahId - 1, // ইনডেক্স ঠিক রাখা হয়েছে
+              surahIndex: surahId - 1,
               surahName: enName,
-              initialAyahIndex: null, // ডিফল্ট শুরু থেকে
+              initialAyahIndex: null,
             ),
           ),
         );

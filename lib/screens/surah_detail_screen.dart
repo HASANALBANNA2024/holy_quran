@@ -7,6 +7,8 @@ import 'package:holy_quran/providers/view_mode_provider.dart'; // ✅ নতু�
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:holy_quran/providers/qari_provider.dart';
+import 'package:holy_quran/logics/quran_search.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class SurahDetailScreen extends StatefulWidget {
   final String surahName;
@@ -25,6 +27,9 @@ class SurahDetailScreen extends StatefulWidget {
 }
 
 class _SurahDetailScreenState extends State<SurahDetailScreen> {
+
+  final ItemScrollController itemScrollController = ItemScrollController();
+  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
   final AudioPlayer _audioPlayer = AudioPlayer();
   final ScrollController _scrollController = ScrollController();
   List<GlobalKey> _ayahKeys = [];
@@ -37,7 +42,14 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
   void initState() {
     super.initState();
 
-    // হাইলাইট এবং অটো-স্ক্রল লিসেনার (আপনার অরিজিনাল লজিক)
+    // যদি initialAyahIndex নাল না হয়, তবে কিছু সময় পর ওই আয়াতে স্ক্রল করো
+    if (widget.initialAyahIndex != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToAyah(widget.initialAyahIndex!);
+      });
+    }
+
+        // হাইলাইট এবং অটো-স্ক্রল লিসেনার (আপনার অরিজিনাল লজিক)
     _audioPlayer.currentIndexStream.listen((index) {
       if (index != null && _cachedAyahs.isNotEmpty && mounted) {
         int surahNumber = widget.surahIndex + 1;
@@ -80,6 +92,16 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
       }
     });
   }
+
+  void _scrollToAyah(int index) {
+    // itemScrollController আপনার স্ক্রিন ক্লাসে আগেই ডিফাইন করা থাকতে হবে
+    itemScrollController.scrollTo(
+      index: index,
+      duration: const Duration(milliseconds: 500), // কত দ্রুত স্ক্রল হবে
+      curve: Curves.easeInOutCubic,               // স্ক্রলিং অ্যানিমেশন স্টাইল
+    );
+  }
+
 
   void _autoScrollToIndex(int index) {
     if (!_scrollController.hasClients || _ayahKeys.isEmpty) return;
@@ -294,9 +316,11 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
               ],
               body: ayahs.isEmpty
                   ? const Center(child: Text("No verses found"))
-                  : ListView.builder(
+                  : ScrollablePositionedList.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 itemCount: ayahs.length,
+                itemScrollController: itemScrollController, // এখানে কন্ট্রোলারটি দিন
+                itemPositionsListener: itemPositionsListener,
                 itemBuilder: (context, index) => _buildAyahItem(ayahs[index], index, viewMode),
               ),
             ),

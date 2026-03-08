@@ -14,6 +14,8 @@ dependencies:
   # UI & Design
   cupertino_icons: ^1.0.8
 
+  scrollable_positioned_list: ^0.3.8
+
   # কোর ফাংশনালিটি (Adhan, Location, Time)
   adhan: ^2.0.0+1
   geolocator: ^13.0.2
