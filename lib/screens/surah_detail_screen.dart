@@ -33,6 +33,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   final ScrollController _scrollController = ScrollController();
   List<GlobalKey> _ayahKeys = [];
+  
   int _currentlyPlayingAyah = -1;
   bool _isAudioLoading = false;
   List<Map<String, dynamic>> _cachedAyahs = [];
@@ -88,7 +89,7 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToInitialAyah();
       if (widget.initialAyahIndex != null) {
-        _playFullSurahAudio(widget.initialAyahIndex!);
+        // _playFullSurahAudio(widget.initialAyahIndex!);
       }
     });
   }
@@ -104,26 +105,25 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
 
 
   void _autoScrollToIndex(int index) {
-    if (!_scrollController.hasClients || _ayahKeys.isEmpty) return;
+    if (!itemScrollController.isAttached) return;
+
     int surahNumber = widget.surahIndex + 1;
-    int targetKeyIndex;
+    int targetIndex;
 
+    // আপনার বিদ্যমান বিসমিল্লাহ লজিক ঠিক রাখা হলো
     if (surahNumber != 1 && surahNumber != 9) {
-      if (index == 0) {
-        _scrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
-        return;
-      }
-      targetKeyIndex = index - 1;
+      targetIndex = (index == 0) ? 0 : index - 1;
     } else {
-      targetKeyIndex = index;
+      targetIndex = index;
     }
 
-    if (targetKeyIndex >= 0 && targetKeyIndex < _ayahKeys.length) {
-      final keyContext = _ayahKeys[targetKeyIndex].currentContext;
-      if (keyContext != null) {
-        Scrollable.ensureVisible(keyContext, duration: const Duration(milliseconds: 600), curve: Curves.easeInOut, alignment: 0.1);
-      }
-    }
+    // GlobalKey এর বদলে সরাসরি ইনডেক্স ব্যবহার করে স্ক্রল করুন
+    itemScrollController.scrollTo(
+      index: targetIndex,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOut,
+      alignment: 0.1,
+    );
   }
 
   void _playNextSurah() {
@@ -317,11 +317,12 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
               body: ayahs.isEmpty
                   ? const Center(child: Text("No verses found"))
                   : ScrollablePositionedList.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                // গুরুত্বপূর্ণ: NestedScrollView এর সাথে ব্যবহারের জন্য নিচের ৩টি লাইন যোগ করুন
+                physics: const ClampingScrollPhysics(),
                 itemCount: ayahs.length,
-                itemScrollController: itemScrollController, // এখানে কন্ট্রোলারটি দিন
+                itemScrollController: itemScrollController,
                 itemPositionsListener: itemPositionsListener,
-                itemBuilder: (context, index) => _buildAyahItem(ayahs[index], index, viewMode),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10), itemBuilder: (context, index) => _buildAyahItem(ayahs[index], index, viewMode),
               ),
             ),
           ),
