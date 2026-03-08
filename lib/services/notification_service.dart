@@ -100,6 +100,7 @@ class NotificationService {
               priority: Priority.high,
               // sound: RawResourceAndroidNotificationSound('notification_sound'), // যদি সাউন্ড থাকে
               playSound: true, // এটি দিলে ফোনের ডিফল্ট সাউন্ড বাজবে
+              fullScreenIntent: true,
             ),
           ),
           // আপনার ভার্সন অনুযায়ী সঠিক প্রপার্টি
