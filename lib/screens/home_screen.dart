@@ -91,11 +91,23 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-// ৪. নিশ্চিত করুন এই ফাংশনগুলো আপনার ক্লাসে আছে (নাহলে লাল দাগ যাবে না)
-  void _loadData() {
-    // ডাটা লোড করার কোড
-  }
+  void _loadData() async {
+    print("🔄 Loading initial data and scheduling notifications...");
 
+    // ১. কুরআন প্রোভাইডার থেকে ডাটা লোড নিশ্চিত করা
+    final quranProvider = Provider.of<QuranProvider>(context, listen: false);
+
+    if (quranProvider.surahs.isEmpty) {
+      await quranProvider.initQuran();
+    }
+
+    // ২. ডাটা লোড হওয়ার পর নোটিফিকেশন শিডিউল করা
+    if (isNotificationEnabled) {
+      // এই মেথডটি আপনার NotificationService ক্লাসে থাকতে হবে
+      await NotificationService.scheduleAll();
+      print("✅ Notifications scheduled successfully!");
+    }
+  }
   void _updateCounter() {
     setState(() {
       // কাউন্টার আপডেট করার কোড
