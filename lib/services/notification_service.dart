@@ -63,9 +63,10 @@ class NotificationService {
       category,
       "আজকের আয়াত রেফারেন্স: $ayatRef. কোরআন থেকে আয়াতটি পড়ে নিন।",
       // daily message of ayah with reference
-      _nextInstanceOfTime(16, 20), // প্রতিদিন সকাল ৯টায়
+      _nextInstanceOfTime(16, 50), // প্রতিদিন সকাল ৯টায়
       const NotificationDetails(android: androidDetails),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      // androidScheduleMode: AndroidScheduleMode.alarmClock, // 'exactAllowWhileIdle' এর বদলে এটি দিন
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );

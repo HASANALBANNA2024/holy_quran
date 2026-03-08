@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:holy_quran/data/guidance_data.dart';
 import 'package:flutter/material.dart';
 import 'package:holy_quran/widgets/show_sadakah_overlay.dart'; // আপনার ফোল্ডার পাথ অনুযায়ী
@@ -67,69 +68,75 @@ class _HomeScreenState extends State<HomeScreen> {
     // WidgetsBinding এর ভেতরে সব লজিক রাখুন
     WidgetsBinding.instance.addPostFrameCallback((_) async {
 
-      // নোটিফিকেশন পারমিশন ও সার্ভিস (আগের কোড)
-      await flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-          ?.requestNotificationsPermission();
+      // ১. অ্যান্ড্রয়েড নোটিফিকেশন পারমিশন রিকোয়েস্ট
+      if (Platform.isAndroid) {
+        await flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+            ?.requestNotificationsPermission();
+      }
 
-      NotificationService.init((payload) {
+      // ২. নোটিফিকেশন সার্ভিস ইনিশিয়ালাইজ (Handler সহ)
+      await NotificationService.init((payload) {
         if (payload != null && mounted) {
           handleNotificationClick(payload, context);
         }
       });
 
-      // ৩. ডাটা লোড করার ফাংশন (লাল দাগ থাকলে নিশ্চিত করুন এই নামে মেথড আছে)
+      // ৩. ডাটা লোড করার ফাংশন কল
       _loadData();
 
-      // টাইমারটি এখানে সেট করা সবচেয়ে নিরাপদ
+      // ৪. টাইমার সেট করা (Prayer times কাউন্টারের জন্য)
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         if (_prayerTimes != null && mounted) {
           _updateCounter();
         }
       });
     });
-
   }
 
   void _loadData() async {
     print("🔄 Loading initial data and scheduling notifications...");
 
-    // ১. কুরআন প্রোভাইডার থেকে ডাটা লোড নিশ্চিত করা
-    final quranProvider = Provider.of<QuranProvider>(context, listen: false);
+    // ১. SharedPreferences থেকে নোটিফিকেশন সেটিংস লোড করা (নতুন যুক্ত)
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        isNotificationEnabled = prefs.getBool('isNotificationEnabled') ?? true;
+      });
+    }
 
+    // ২. কুরআন প্রোভাইডার থেকে ডাটা লোড নিশ্চিত করা (আপনার আগের লজিক)
+    final quranProvider = Provider.of<QuranProvider>(context, listen: false);
     if (quranProvider.surahs.isEmpty) {
       await quranProvider.initQuran();
     }
 
-    // ২. ডাটা লোড হওয়ার পর নোটিফিকেশন শিডিউল করা
+    // ৩. ডাটা লোড হওয়ার পর নোটিফিকেশন শিডিউল করা (আপনার আগের লজিক)
     if (isNotificationEnabled) {
       await NotificationService.scheduleAll();
       print("✅ Notifications scheduled successfully!");
       await NotificationService.scheduleDailyGuidance(GuidanceData.categories);
     }
 
-    // ৩. সাদাকাহ ওভারলে সাইকেল লজিক
-    final prefs = await SharedPreferences.getInstance();
+    // ৪. সাদাকাহ ওভারলে সাইকেল লজিক (আপনার আগের লজিক)
     String? lastActionStr = prefs.getString('last_sadakah_action');
     int nextShowDays = prefs.getInt('next_show_days') ?? 0;
 
     bool shouldShow = false;
 
     if (lastActionStr == null) {
-      // যদি আগে কখনো ক্লিক না করে থাকে (প্রথমবার অ্যাপ ওপেন)
       shouldShow = true;
     } else {
       DateTime lastActionDate = DateTime.parse(lastActionStr);
       DateTime today = DateTime.now();
       int differenceInDays = today.difference(lastActionDate).inDays;
 
-      // যদি নির্ধারিত দিন (৭ বা ২১) পার হয়ে যায়
       if (differenceInDays >= nextShowDays) {
         shouldShow = true;
       }
     }
 
-    // ৪. শর্ত পূরণ হলে ২ সেকেন্ড পর ওভারলে কল
+    // ৫. শর্ত পূরণ হলে ২ সেকেন্ড পর ওভারলে কল (আপনার আগের লজিক)
     if (shouldShow) {
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted && quranProvider.translations.isNotEmpty) {
@@ -159,13 +166,19 @@ class _HomeScreenState extends State<HomeScreen> {
       category: parts[0],
       translation: parts[1],
       surahName: parts[2],
-      ayahNumber: int.parse(parts[3]),
+      ayahNumber: int.parse(parts[4]),
       onTap: () {
         Navigator.pop(context); // কার্ড বন্ধ করা
 
         // এখানে সরাসরি সূরা ডিটেইলসে যাওয়ার লজিক দিন
         // উদাহরণ:
         // Navigator.push(context, MaterialPageRoute(builder: (context) => SurahDetails(index: parts[4])));
+        Navigator.push(context, MaterialPageRoute(
+          builder: (context) => SurahDetailScreen(
+            surahIndex: int.parse(parts[3]), // index 3 e holo Surah index
+            surahName: parts[2],
+          ),
+        ));
       },
     );
   }
