@@ -11,6 +11,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  // আপনার আইকনের ব্যাকগ্রাউন্ডের সাথে হুবহু মিল রাখার জন্য এই কালার কোডটি ব্যবহার করুন
+  final Color themeColor = const Color(0xFF607D8B);
   String _loadingMessage = "Preparing your experience...";
 
   @override
@@ -21,41 +23,31 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _initializeApp() async {
     try {
-      // ১. প্রোভাইডার চেক করা
       final quranProvider = Provider.of<QuranProvider>(context, listen: false);
-
-      // ২. ডাটা লোড করা শুরু
       await quranProvider.initQuran();
 
-      // ৩. ডাটা লোড হওয়ার পর চেক করা যে সবকিছু ঠিক আছে কি না
       if (mounted) {
         if (quranProvider.surahs.isNotEmpty) {
           setState(() {
             _loadingMessage = "Quranic Data Loaded!";
           });
-
-          // ৪. সফলভাবে লোড হলে সামান্য বিরতি দিয়ে হোমে যাওয়া
           await Future.delayed(const Duration(milliseconds: 800));
           _navigateToHome();
         } else {
-          // যদি ডাটা খালি থাকে (ফাইল না পাওয়া গেলে)
           setState(() {
             _loadingMessage = "Data not found! Checking assets...";
           });
         }
       }
     } catch (e) {
-      // ৫. এরর হ্যান্ডেলিং
       if (mounted) {
         setState(() {
           _loadingMessage = "Error: $e";
         });
-        debugPrint("Initialization Error: $e");
       }
     }
   }
 
-  // ফিক্স: এখানে শুধু একটি ফাংশন রাখা হয়েছে এবং রেড লাইন দূর করা হয়েছে
   void _navigateToHome() {
     if (!mounted) return;
     Navigator.pushReplacement(
@@ -69,83 +61,76 @@ class _SplashScreenState extends State<SplashScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      body: Stack(
-        children: [
-          /// 🔹 Background Image
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/final_background.jpg',
-              fit: BoxFit.cover,
-            ),
-          ),
-
-          /// 🔹 Dark Overlay
-          Positioned.fill(
-            child: Container(color: Colors.black.withOpacity(0.5)),
-          ),
-
-          /// 🔹 Content
-          Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    constraints: const BoxConstraints(maxWidth: 450),
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Image.asset(
-                      "assets/images/bismillah.png",
-                      width: size.width * 0.5,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) => const Text(
-                        "﷽",
-                        style: TextStyle(color: Colors.white, fontSize: 50),
-                      ),
-                    ),
+      backgroundColor: Colors.white, // এখানে সলিড ব্লু-গ্রে সেট করা হয়েছে
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // 🔹 App Logo
+              Container(
+                constraints: const BoxConstraints(maxWidth: 450),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Image.asset(
+                  "assets/images/app_icon.png", // এক্সটেনশন .png যোগ করা হয়েছে
+                  width: size.width * 0.4, // লোগোর সাইজ কিছুটা ছোট করা হয়েছে যাতে সুন্দর লাগে
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) => const Text(
+                    "﷽",
+                    style: TextStyle(color: Colors.grey, fontSize: 60),
                   ),
-
-                  const SizedBox(height: 20),
-
-                  const Text(
-                    "Al Quran",
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 2,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  const Text(
-                    "Read • Listen • Learn",
-                    style: TextStyle(fontSize: 16, color: Colors.white70),
-                  ),
-
-                  const SizedBox(height: 50),
-
-                  const CircularProgressIndicator(color: Colors.white),
-
-                  const SizedBox(height: 20),
-
-                  /// 🔹 Dynamic Loading Message
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: Text(
-                      _loadingMessage,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white60,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
+
+              const SizedBox(height: 30),
+
+              // 🔹 App Title
+              const Text(
+                "Holy Quran",
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                  letterSpacing: 1.5,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              const Text(
+                "Read • Listen • Learn",
+                style: TextStyle(fontSize: 14, color: Colors.grey),
+              ),
+
+              const SizedBox(height: 60),
+
+              // 🔹 Loading Indicator
+              const SizedBox(
+                width: 30,
+                height: 30,
+                child: CircularProgressIndicator(
+                  color: Colors.grey,
+                  strokeWidth: 3,
+                ),
+              ),
+
+              const SizedBox(height: 25),
+
+              // 🔹 Loading Status
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: Text(
+                  _loadingMessage,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

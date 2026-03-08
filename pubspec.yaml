@@ -48,21 +48,31 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
   flutter_launcher_icons: "^0.13.1"
+  flutter_native_splash: ^2.4.0
 
+# Launcher Icon Configuration (White Theme)
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/app_icon.png" # এখানে আপনার আইকনের পাথ দিন
-  adaptive_icon_background: "#ffffff" # অ্যান্ড্রয়েডের জন্য ব্যাকগ্রাউন্ড কালার
-  adaptive_icon_foreground: "assets/images/app_icon.png" # ফোরগ্রাউন্ড ইমেজ
+  image_path: "assets/images/app_icon.png"
+  adaptive_icon_background: "#FFFFFF" # সাদা ব্যাকগ্রাউন্ড
+  adaptive_icon_foreground: "assets/images/app_icon.png"
+
+# Splash Screen Configuration (White Theme)
+flutter_native_splash:
+  color: "#FFFFFF" # সাদা ব্যাকগ্রাউন্ড
+  image: "assets/images/app_icon.png"
+  android_12:
+    image: "assets/images/app_icon.png"
+    icon_background_color: "#FFFFFF" # অ্যান্ড্রয়েড ১২-এর জন্য সাদা
+    fullscreen: true
 
 
 flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/final_background.jpg
-    - assets/images/bismillah.png
+    - assets/images/app_icon.png
     - assets/images/compass_dial.png
     - assets/images/qibla_needle.png
     - assets/images/surah_icon_image.png
