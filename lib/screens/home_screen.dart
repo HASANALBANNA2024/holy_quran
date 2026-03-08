@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:holy_quran/data/guidance_data.dart';
 import 'package:flutter/material.dart';
 import 'package:holy_quran/widgets/show_sadakah_overlay.dart'; // আপনার ফোল্ডার পাথ অনুযায়ী
 import 'package:holy_quran/logics/quran_search.dart';
@@ -104,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (isNotificationEnabled) {
       await NotificationService.scheduleAll();
       print("✅ Notifications scheduled successfully!");
+      await NotificationService.scheduleDailyGuidance(GuidanceData.categories);
     }
 
     // ৩. সাদাকাহ ওভারলে সাইকেল লজিক

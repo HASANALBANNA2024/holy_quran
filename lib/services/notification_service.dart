@@ -1,9 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
+import 'dart:math';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
-import 'package:adhan/adhan.dart';
 import 'package:holy_quran/logics/prayer_logic.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -11,17 +10,13 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterL
 class NotificationService {
 
   static Future<void> init(Function(String?) onNotificationClick) async {
-    // ১. টাইমজোন ডাটা লোড করা
     tz_data.initializeTimeZones();
 
     const AndroidInitializationSettings androidSettings =
     AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const InitializationSettings settings = InitializationSettings(
-      android: androidSettings,
-    );
+    const InitializationSettings settings = InitializationSettings(android: androidSettings);
 
-    // ২. নোটিফিকেশন প্লাগইন ইনিশিয়ালাইজ করা
     await flutterLocalNotificationsPlugin.initialize(
       settings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
@@ -29,47 +24,51 @@ class NotificationService {
       },
     );
 
-    // অ্যান্ড্রয়েড ১৩+ এর জন্য পারমিশন চেক (লাল দাগ দূর করা হয়েছে)
     if (Platform.isAndroid) {
       final androidImplementation = flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
 
-      // এটি সরাসরি পারমিশন পপ-আপ দেখাবে
-      await androidImplementation?.requestNotificationsPermission();
+      // ১. নোটিফিকেশন চ্যানেল তৈরি (মাস্ট)
+      const AndroidNotificationChannel channel = AndroidNotificationChannel(
+        'daily_guidance_id',
+        'Daily Guidance',
+        description: 'Quranic wisdom and reminders',
+        importance: Importance.max,
+      );
+      await androidImplementation?.createNotificationChannel(channel);
 
-      // Exact Alarm পারমিশন চেক (অ্যান্ড্রয়েড ১৩ ও ১৪ এর এরর দূর করতে)
+      // ২. পারমিশন রিকোয়েস্ট
+      await androidImplementation?.requestNotificationsPermission();
       await androidImplementation?.requestExactAlarmsPermission();
     }
   }
 
-  static Future<void> showInstantNotification({
-    required String title,
-    required String body,
-    required String payload,
-  }) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
-      'instant_notification_channel',
-      'Instant Notifications',
+  // GuidanceData থেকে শিডিউল করার নতুন মেথড
+  static Future<void> scheduleDailyGuidance(Map<String, List<String>> categories) async {
+    final random = Random();
+    String category = categories.keys.elementAt(random.nextInt(categories.length));
+    List<String> ayats = categories[category]!;
+    String ayatRef = ayats[random.nextInt(ayats.length)];
+
+    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'daily_guidance_id',
+      'Daily Guidance',
       importance: Importance.max,
       priority: Priority.high,
+      styleInformation: BigTextStyleInformation(''),
     );
 
-    const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
-
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      title,
-      body,
-      platformChannelSpecifics,
-      payload: payload,
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      999,
+      category,
+      "আজকের আয়াত রেফারেন্স: $ayatRef. কোরআন থেকে আয়াতটি পড়ে নিন।",
+      // daily message of ayah with reference
+      _nextInstanceOfTime(16, 20), // প্রতিদিন সকাল ৯টায়
+      const NotificationDetails(android: androidDetails),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
     );
-  }
-
-  static Future<void> cancelAll() async {
-    await flutterLocalNotificationsPlugin.cancelAll();
-    print("✅ All Notifications Cancelled");
   }
 
   static Future<void> scheduleAll() async {
@@ -84,7 +83,7 @@ class NotificationService {
       "Isha": prayerTimes.isha,
     };
 
-    int id = 100; // নামাজের জন্য আলাদা আইডি রেঞ্জ
+    int id = 100;
     prayers.forEach((name, time) async {
       if (time.isAfter(DateTime.now())) {
         await flutterLocalNotificationsPlugin.zonedSchedule(
@@ -98,17 +97,48 @@ class NotificationService {
               'Prayers',
               importance: Importance.max,
               priority: Priority.high,
-              // sound: RawResourceAndroidNotificationSound('notification_sound'), // যদি সাউন্ড থাকে
-              playSound: true, // এটি দিলে ফোনের ডিফল্ট সাউন্ড বাজবে
-              fullScreenIntent: true,
+              playSound: true,
             ),
           ),
-          // আপনার ভার্সন অনুযায়ী সঠিক প্রপার্টি
           androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
           uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
         );
       }
     });
-    print("✅ Prayers Scheduled");
   }
+  static Future<void> showInstantNotification({
+    required String title,
+    required String body,
+    required String payload,
+  }) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      'daily_guidance_id', // আগের চ্যানেলের সাথে মিল রাখা হয়েছে
+      'Daily Guidance',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0, // আইডি
+      title,
+      body,
+      platformChannelSpecifics,
+      payload: payload,
+    );
+  }
+
+  static tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+    return scheduledDate;
+  }
+
+  static Future<void> cancelAll() async => await flutterLocalNotificationsPlugin.cancelAll();
 }
