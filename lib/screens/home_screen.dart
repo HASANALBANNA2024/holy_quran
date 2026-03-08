@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:holy_quran/widgets/show_sadakah_overlay.dart'; // আপনার ফোল্ডার পাথ অনুযায়ী
 import 'package:holy_quran/logics/quran_search.dart';
 import 'package:holy_quran/providers/quran_provider.dart';
 import 'package:holy_quran/screens/language_ui.dart';
@@ -14,9 +15,6 @@ import 'package:holy_quran/screens/qari_selection_screen.dart';
 import 'package:holy_quran/providers/view_mode_provider.dart';
 import 'package:holy_quran/providers/notification_provider.dart';
 import 'package:holy_quran/screens/notification_screen.dart';
-import 'package:holy_quran/services/notification_service.dart';
-import 'package:holy_quran/providers/alarm_provider.dart';
-import 'package:holy_quran/screens/islamic_alarm_screen.dart';
 import 'package:holy_quran/services/notification_service.dart';
 import 'package:holy_quran/widgets/guidance_overlay_card.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -89,6 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       });
     });
+
   }
 
   void _loadData() async {
@@ -107,7 +106,21 @@ class _HomeScreenState extends State<HomeScreen> {
       await NotificationService.scheduleAll();
       print("✅ Notifications scheduled successfully!");
     }
+    // ডাটা লোড হওয়ার ২ সেকেন্ড পর ওভারলে কল
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        showSadakahOverlay(
+            context,
+            quranProvider.currentLang,
+            quranProvider.translations,
+        );
+      }
+    });
+
+
   }
+
+
   void _updateCounter() {
     setState(() {
       // কাউন্টার আপডেট করার কোড

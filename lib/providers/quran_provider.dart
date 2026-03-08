@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 
 class QuranProvider extends ChangeNotifier {
   List<dynamic> _surahs = [];
+
+
   Map<String, List<dynamic>> _allTranslations = {}; // সব ভাষার অনুবাদ
   String _currentLang = "en"; // ডিফল্ট ইংরেজি
   bool _isLoading = true;
