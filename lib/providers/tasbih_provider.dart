@@ -5,7 +5,7 @@ import 'package:just_audio/just_audio.dart'; // সাউন্ডের জন�
 class TasbihProvider with ChangeNotifier {
   int _count = 0;
   int _target = 33;
-  String _selectedDhikr = "سبحان الله";
+  String _selectedDhikr = "سُبْحَانَ اللَّهِ";
 
   // সাউন্ড প্লেয়ার মেমোরিতে রাখা
   final AudioPlayer _audioPlayer = AudioPlayer();
