@@ -4,7 +4,6 @@ import 'package:adhan/adhan.dart';
 import 'package:flutter/material.dart';
 import 'package:holy_quran/logics/prayer_logic.dart';
 import 'package:intl/intl.dart';
-import 'package:holy_quran/services/notification_service.dart';
 
 class PrayerScreen extends StatefulWidget {
   const PrayerScreen({super.key});
@@ -21,16 +20,6 @@ class _PrayerScreenState extends State<PrayerScreen> {
   String? selectedName;
   DateTime? selectedTime;
 
-
-  // --- এই যে এখানে ফাংশনটি রাখবেন (build মেথডের ঠিক উপরে) ---
-  void handleNotificationClick(String payload, BuildContext context) {
-    debugPrint("নোটিফিকেশন ডাটা: $payload");
-
-    // ক্লিক করলে যা ঘটবে:
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("আপনি ক্লিক করেছেন: $payload")),
-    );
-  }
   @override
   void initState() {
     super.initState();
@@ -38,18 +27,8 @@ class _PrayerScreenState extends State<PrayerScreen> {
     // ১. অ্যাপের ফ্রেম পুরোপুরি তৈরি হওয়ার পর ডাটা লোড শুরু হবে
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadData();
-
-      // নোটিফিকেশন লিসেনার এখানে সেট করুন
-      NotificationService.init((payload) {
-        if (payload != null && mounted) {
-          handleNotificationClick(payload, context);
-        }
-      });
     });
 
-
-
-    // ২. টাইমারটি আগের মতোই থাকবে
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_prayerTimes != null && mounted) { // mounted চেক করা নিরাপদ
         _updateCounter();
@@ -174,7 +153,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             child: Column(
               children: [
-                SizedBox(height: 10,),
+                const SizedBox(height: 10,),
                 Text(
                   displayName,
                   style: const TextStyle(
@@ -284,44 +263,41 @@ class _PrayerScreenState extends State<PrayerScreen> {
           _updateCounter();
         },
         child: Container(
-          // প্যাডিং ১২ থেকে বাড়িয়ে ১৬ করা হয়েছে যাতে হাইট বাড়ে
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
           decoration: BoxDecoration(
             color: isSelected
                 ? const Color(0xFF131B12)
                 : const Color(0xFF243023),
-            borderRadius: BorderRadius.circular(15), // একটু বেশি রাউন্ড করা হয়েছে
+            borderRadius: BorderRadius.circular(15),
             border: isSelected
                 ? Border.all(color: const Color(0xFF81C784), width: 1.5)
                 : null,
           ),
           child: Row(
             children: [
-              // আইকন সাইজ ২০ থেকে বাড়িয়ে ২৪ করা হয়েছে
               Icon(icon, color: const Color(0xFF81C784), size: 24),
-              const SizedBox(width: 10), // গ্যাপ কিছুটা বাড়ানো হয়েছে
+              const SizedBox(width: 10),
               Flexible(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min, // কলামটিকে মাঝখানে রাখার জন্য
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     FittedBox(
                       child: Text(
                         name,
                         style: TextStyle(
-                          // isSelected হলে টেক্সট উজ্জ্বল দেখাবে
                           color: isSelected ? Colors.white : Colors.white60,
-                          fontSize: 11, // ৯ থেকে বাড়িয়ে ১১ করা হয়েছে
+                          fontSize: 11,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 2), // টেক্সট দুটির মাঝে গ্যাপ
+                    const SizedBox(height: 2),
                     Text(
                       DateFormat.jm().format(time),
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 14, // ১২ থেকে বাড়িয়ে ১৪ করা হয়েছে
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 0.5,
                       ),
@@ -352,20 +328,18 @@ class _PrayerScreenState extends State<PrayerScreen> {
         _updateCounter();
       },
       child: Container(
-        // এখানে height এবং width সেট করে কার্ডের সাইজ নিয়ন্ত্রণ করা হয়েছে
-        height: 150, // আপনি চাইলে এটি বাড়িয়ে ১৪০ বা ১৫০ করতে পারেন
-        padding: const EdgeInsets.symmetric(vertical: 10), // ভেতরের স্পেসের জন্য
+        height: 150,
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFF131B12) : const Color(0xFF243023),
-          borderRadius: BorderRadius.circular(20), // কোণাগুলো একটু বেশি রাউন্ড করলাম
+          borderRadius: BorderRadius.circular(20),
           border: isSelected
               ? Border.all(color: const Color(0xFF81C784), width: 1.5)
               : null,
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly, // ইলিমেন্টগুলোকে সমান দূরত্বে রাখবে
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            // আইকন সাইজ ২৬ থেকে বাড়িয়ে ৩২ করা হয়েছে
             Icon(icon, color: const Color(0xFF81C784), size: 32),
 
             Column(
@@ -374,7 +348,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
                   name,
                   style: TextStyle(
                     color: isSelected ? Colors.white : Colors.white70,
-                    fontSize: 14, // ১১ থেকে বাড়িয়ে ১৪ করা হয়েছে
+                    fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -383,7 +357,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
                   DateFormat.jm().format(time),
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 13, // ১০ থেকে বাড়িয়ে ১৩ করা হয়েছে
+                    fontSize: 13,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5,
                   ),
@@ -391,11 +365,10 @@ class _PrayerScreenState extends State<PrayerScreen> {
               ],
             ),
 
-            // নিচের স্টার আইকনটি একটু বড় করা হয়েছে
             Icon(
               isSelected ? Icons.star : Icons.star_border,
               color: isSelected ? const Color(0xFF81C784) : Colors.white24,
-              size: 20, // ১৬ থেকে বাড়িয়ে ২০ করা হয়েছে
+              size: 20,
             ),
           ],
         ),

@@ -9,12 +9,10 @@ import 'package:holy_quran/providers/view_mode_provider.dart';
 import 'package:holy_quran/screens/splash_screen.dart';
 import 'package:holy_quran/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:holy_quran/services/notification_service.dart';
 
 void main() async { // এখানে async যোগ করুন
-  WidgetsFlutterBinding.ensureInitialized();
 
-  await NotificationService.init((payload) {});
+  WidgetsFlutterBinding.ensureInitialized();
 
   runApp(
     MultiProvider(
@@ -25,7 +23,7 @@ void main() async { // এখানে async যোগ করুন
         ChangeNotifierProvider(create: (_) => QariProvider()),
         ChangeNotifierProvider(create: (_) => TasbihProvider()),
         ChangeNotifierProvider(create: (_) => ViewModeProvider()),
-        ChangeNotifierProvider(create: (_) => NotificationProvider())
+
         // future update feature this
         // ChangeNotifierProvider(create: (_) =>AlarmProvider())
         // ChangeNotifierProvider(create: (_) => LastReadProvider()),

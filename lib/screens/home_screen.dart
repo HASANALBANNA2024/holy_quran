@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:holy_quran/data/guidance_data.dart';
 import 'package:flutter/material.dart';
 import 'package:holy_quran/widgets/show_sadakah_overlay.dart'; // আপনার ফোল্ডার পাথ অনুযায়ী
 import 'package:holy_quran/logics/quran_search.dart';
@@ -15,11 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:holy_quran/providers/qari_provider.dart';
 import 'package:holy_quran/screens/qari_selection_screen.dart';
 import 'package:holy_quran/providers/view_mode_provider.dart';
-import 'package:holy_quran/providers/notification_provider.dart';
-import 'package:holy_quran/screens/notification_screen.dart';
-import 'package:holy_quran/services/notification_service.dart';
 import 'package:holy_quran/widgets/guidance_overlay_card.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -31,94 +26,51 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  bool isNotificationEnabled = true;
-  // function call to bridge of notification
-  void triggerDailyGuidance(String category, String text, String surahName, int surahIdx, int ayahNum) {
-    // ১. ফোনে সাউন্ডসহ নোটিফিকেশন পাঠানো
-    NotificationService.showInstantNotification(
-        title: category,
-        body: text,
-        payload: "$category|$text|$surahName|$surahIdx|$ayahNum"
-    );
-
-    // ২. অ্যাপের ইনবক্সে সেভ করা
-    Provider.of<NotificationProvider>(context, listen: false).addNotification(
-        NotificationModel(
-          id: DateTime.now().toString(),
-          category: category,
-          text: text,
-          surahName: surahName,
-          surahIndex: surahIdx,
-          ayahNumber: ayahNum,
-          time: DateTime.now(),
-        )
-    );
-  }
-
-  @override
-  // ১. ক্লাসের শুরুতে এই ভেরিয়েবলগুলো থাকতে হবে (নাহলে লাল দাগ আসবে)
+  bool isNotificationEnabled = true; // এই ভেরিয়েবলটি রাখতে পারেন বা সরাতে পারেন
   Timer? _timer;
-// PrayerTimes বা আপনার ডাটা টাইপ অনুযায়ী ভেরিয়েবল
   var _prayerTimes;
 
   @override
   void initState() {
     super.initState();
 
-    // WidgetsBinding এর ভেতরে সব লজিক রাখুন
+    // ✅ আপডেটেড initState - নোটিফিকেশন কোড বাদ দেওয়া হয়েছে
     WidgetsBinding.instance.addPostFrameCallback((_) async {
 
-      // ১. অ্যান্ড্রয়েড নোটিফিকেশন পারমিশন রিকোয়েস্ট
-      if (Platform.isAndroid) {
-        await flutterLocalNotificationsPlugin
-            .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-            ?.requestNotificationsPermission();
-      }
-
-      // ২. নোটিফিকেশন সার্ভিস ইনিশিয়ালাইজ (Handler সহ)
-      await NotificationService.init((payload) {
-        if (payload != null && mounted) {
-          handleNotificationClick(payload, context);
-        }
-      });
-
-      // ৩. ডাটা লোড করার ফাংশন কল
+      // ১. ডাটা লোড করার ফাংশন কল
       _loadData();
 
-      // ৪. টাইমার সেট করা (Prayer times কাউন্টারের জন্য)
+      // ২. টাইমার সেট করা (যদি prayer times ব্যবহার করেন)
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         if (_prayerTimes != null && mounted) {
-          _updateCounter();
+          // _updateCounter(); // আপনার কোড অনুযায়ী
         }
       });
     });
   }
 
   void _loadData() async {
-    print("🔄 Loading initial data and scheduling notifications...");
+    print("🔄 Loading initial data...");
 
-    // ১. SharedPreferences থেকে নোটিফিকেশন সেটিংস লোড করা (নতুন যুক্ত)
+    // ১. SharedPreferences থেকে ডাটা লোড করা
     final prefs = await SharedPreferences.getInstance();
-    if (mounted) {
-      setState(() {
-        isNotificationEnabled = prefs.getBool('isNotificationEnabled') ?? true;
-      });
-    }
 
-    // ২. কুরআন প্রোভাইডার থেকে ডাটা লোড নিশ্চিত করা (আপনার আগের লজিক)
+    // ২. কুরআন প্রোভাইডার থেকে ডাটা লোড নিশ্চিত করা
     final quranProvider = Provider.of<QuranProvider>(context, listen: false);
     if (quranProvider.surahs.isEmpty) {
       await quranProvider.initQuran();
     }
 
-    // ৩. ডাটা লোড হওয়ার পর নোটিফিকেশন শিডিউল করা (আপনার আগের লজিক)
+    // ❌ নোটিফিকেশন সংক্রান্ত কোড সম্পূর্ণ বাদ দেওয়া হয়েছে
+    /*
     if (isNotificationEnabled) {
       await NotificationService.scheduleAll();
       print("✅ Notifications scheduled successfully!");
-      await NotificationService.scheduleDailyGuidance(GuidanceData.categories);
+      await NotificationService.scheduleDailyGuidance();
     }
+    */
 
-    // ৪. সাদাকাহ ওভারলে সাইকেল লজিক (আপনার আগের লজিক)
+    // ৩. সাদাকাহ ওভারলে সাইকেল লজিক
     String? lastActionStr = prefs.getString('last_sadakah_action');
     int nextShowDays = prefs.getInt('next_show_days') ?? 0;
 
@@ -136,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    // ৫. শর্ত পূরণ হলে ২ সেকেন্ড পর ওভারলে কল (আপনার আগের লজিক)
+    // ৪. শর্ত পূরণ হলে ২ সেকেন্ড পর ওভারলে কল
     if (shouldShow) {
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted && quranProvider.translations.isNotEmpty) {
@@ -243,24 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 showSearch(context: context, delegate: QuranSearch());
               },
             ),
-            IconButton(
-              icon: Icon(Icons.notifications_active_outlined, color: Colors.white70),
-              onPressed: () {
-                context.read<NotificationProvider>().markAsRead();
-                Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationScreen()));
-              },
-            ),
-            if (context.watch<NotificationProvider>().unreadCount > 0)
-              Positioned(
-                right: 10, top: 10,
-                child: Container(
-                  padding: EdgeInsets.all(2),
-                  decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(10)),
-                  constraints: BoxConstraints(minWidth: 16, minHeight: 16),
-                  child: Text('${context.watch<NotificationProvider>().unreadCount}',
-                      style: TextStyle(color: Colors.white, fontSize: 10), textAlign: TextAlign.center),
-                ),
-              ),
+
           ],
           leading: Builder(
             builder: (context) {
@@ -525,40 +460,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
 
 
-        ListTile(
-          title: const Text(
-            "Notifications",
-            style: TextStyle(fontWeight: FontWeight.w500),
-          ),
-          subtitle: Text(
-            isNotificationEnabled ? "On" : "Off",
-            style: TextStyle(color: isNotificationEnabled ? Colors.green[700] : Colors.grey),
-          ),
-          leading: Icon(
-            isNotificationEnabled ? Icons.notifications_active : Icons.notifications_off,
-            color: Colors.green, // আপনার প্রিয় ডার্ক গ্রিন কালার
-          ),
-          trailing: Switch(
-            value: isNotificationEnabled,
-            activeColor: const Color(0xFF1B5E20),
-            onChanged: (bool value) async {
-              setState(() {
-                isNotificationEnabled = value;
-              });
 
-              // সরাসরি সার্ভিস ক্লাস কল করুন (এতে হোম স্ক্রিনে আলাদা ফাংশন লাগবে না)
-              if (value == false) {
-                await NotificationService.cancelAll();
-              } else {
-                await NotificationService.scheduleAll();
-              }
-
-              // সেটিংস সেভ করার জন্য (SharedPreferences)
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.setBool('isNotificationEnabled', value);
-            },
-          ),
-        ),
         SwitchListTile(
           secondary: const Icon(Icons.dark_mode, color: Colors.green),
           title: const Text("Dark Mode"),
