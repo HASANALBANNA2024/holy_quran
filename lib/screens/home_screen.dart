@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:holy_quran/widgets/last_read_widget.dart';
 import 'package:holy_quran/widgets/show_sadakah_overlay.dart'; // আপনার ফোল্ডার পাথ অনুযায়ী
 import 'package:holy_quran/logics/quran_search.dart';
 import 'package:holy_quran/providers/quran_provider.dart';
@@ -249,6 +250,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       // Quick Action Button
                       QuickActionCard(),
                       const SizedBox(height: 10),
+                       // future feature add last read
+                       // last read widget call
+                       // const LastReadWidget(),
+
                     ],
                   ),
                 ),
