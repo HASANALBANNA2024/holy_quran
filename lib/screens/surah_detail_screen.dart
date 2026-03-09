@@ -87,11 +87,18 @@ class _SurahDetailScreenState extends State<SurahDetailScreen> {
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+
       _scrollToInitialAyah();
-      if (widget.initialAyahIndex != null) {
-        // _playFullSurahAudio(widget.initialAyahIndex!);
+
+// if (widget.initialAyahIndex != null) {
+
+      if (widget.initialAyahIndex == 0) {
+
+// _playFullSurahAudio(widget.initialAyahIndex!);
+
+        _playFullSurahAudio(0);
+
       }
-    });
   }
 
   void _scrollToAyah(int index) {
