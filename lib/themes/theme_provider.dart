@@ -4,11 +4,10 @@ class ThemeProvider extends ChangeNotifier {
   bool _isDarkMode = false;
   bool get isDarkMode => _isDarkMode;
 
-  // 🌙 আপনার পছন্দের সফট ডার্ক থিম (Slate Blue/Charcoal)
   ThemeData get darkTheme => ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
-    primaryColor: const Color(0xFF2E7D32), // গাঢ় সবুজ
+    primaryColor: const Color(0xFF2E7D32),
     scaffoldBackgroundColor: const Color(0xFF1B262C),
 
     appBarTheme: const AppBarTheme(
@@ -22,9 +21,8 @@ class ThemeProvider extends ChangeNotifier {
       ),
     ),
 
-    // ✅ কার্ড থিম ঠিক করা হয়েছে (CardThemeData ব্যবহার করে)
     cardTheme: CardThemeData(
-      color: const Color(0xFF3282B8).withOpacity(0.1),
+      color: const Color(0xFF3282B8).withValues(alpha: 0.1),
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
@@ -33,12 +31,11 @@ class ThemeProvider extends ChangeNotifier {
     textTheme: const TextTheme(
       displayLarge: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       titleLarge: TextStyle(color: Colors.white),
-      bodyLarge: TextStyle(color: Color(0xFFBBE1FA)), // হালকা আকাশী
+      bodyLarge: TextStyle(color: Color(0xFFBBE1FA)),
       bodyMedium: TextStyle(color: Colors.white70),
     ),
   );
 
-  // ☀️ লাইট মোড থিম
   ThemeData get lightTheme => ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
@@ -68,6 +65,6 @@ class ThemeProvider extends ChangeNotifier {
 
   void toggleTheme() {
     _isDarkMode = !_isDarkMode;
-    notifyListeners(); // এটিই UI-কে জানাবে যে কালার বদলাতে হবে
+    notifyListeners();
   }
 }

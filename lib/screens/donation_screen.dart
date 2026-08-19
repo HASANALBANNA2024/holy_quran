@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../services/payment_service.dart';
 
+// ignore_for_file: deprecated_member_use
+// ignore_for_file: library_private_types_in_public_api
 class DonationScreen extends StatefulWidget {
+  const DonationScreen({super.key});
+
   @override
   _DonationScreenState createState() => _DonationScreenState();
 }
@@ -14,13 +18,13 @@ class _DonationScreenState extends State<DonationScreen> {
   int _currentStep = 0;
   String? _selectedPaymentMethod;
 
-  // পেমেন্ট সার্ভিস
+  /// payment service
   late PaymentService _paymentService;
   bool _isProcessing = false;
   String _paymentStatus = '';
   String _transactionId = '';
 
-  // কার্ড পেমেন্ট ফিল্ড
+  /// card payment field
   final TextEditingController _cardNumberController = TextEditingController();
   final TextEditingController _cardHolderController = TextEditingController();
   final TextEditingController _expiryController = TextEditingController();
@@ -40,7 +44,9 @@ class _DonationScreenState extends State<DonationScreen> {
       _isProcessing = status == 'processing';
 
       if (status == 'success') {
-        _currentStep = 2; // Success screen
+        _currentStep = 2;
+
+        /// Success screen
       } else if (status == 'error') {
         _showErrorDialog(message);
       }
@@ -302,7 +308,7 @@ class _DonationScreenState extends State<DonationScreen> {
       margin: EdgeInsets.symmetric(vertical: 4),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: color.withOpacity(0.1),
+          backgroundColor: color.withValues(alpha: 0.1),
           child: Icon(icon, color: color),
         ),
         title: Text(title),
@@ -452,7 +458,7 @@ class _DonationScreenState extends State<DonationScreen> {
       final orderId = 'DON-${DateTime.now().millisecondsSinceEpoch}';
 
       if (_selectedPaymentMethod == 'payoneer') {
-        // Payoneer পেমেন্ট
+        // Payoneer payment
         final result = await _paymentService.processPayoneerPayment(
           amount: double.parse(_selectedAmount),
           currency: 'BDT',
@@ -462,11 +468,11 @@ class _DonationScreenState extends State<DonationScreen> {
         );
 
         if (result['success'] && result['paymentUrl'] != null) {
-          // Payoneer পেমেন্ট পেজ ওপেন হবে
-          // WebView বা browser খুলবে
+          // Payoneer payment page open
+          // WebView or  browser open
         }
       } else {
-        // Card পেমেন্ট
+        /// Card payment
         final expiry = _expiryController.text.split('/');
         final result = await _paymentService.processCardPayment(
           amount: double.parse(_selectedAmount),

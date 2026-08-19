@@ -20,7 +20,7 @@ class ArabicText extends StatelessWidget {
       text,
       textAlign: textAlign,
       style: TextStyle(
-        fontFamily: 'QuranFont', // আপনার yaml ফাইলে দেওয়া নাম
+        fontFamily: 'QuranFont',
         fontSize: fontSize,
         height: 1.8,
         color: color,

@@ -11,7 +11,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  // আপনার আইকনের ব্যাকগ্রাউন্ডের সাথে হুবহু মিল রাখার জন্য এই কালার কোডটি ব্যবহার করুন
   final Color themeColor = const Color(0xFF607D8B);
   String _loadingMessage = "Preparing your experience...";
 
@@ -61,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.white, // এখানে সলিড ব্লু-গ্রে সেট করা হয়েছে
+      backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -72,8 +71,8 @@ class _SplashScreenState extends State<SplashScreen> {
                 constraints: const BoxConstraints(maxWidth: 450),
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Image.asset(
-                  "assets/images/app_icon.png", // এক্সটেনশন .png যোগ করা হয়েছে
-                  width: size.width * 0.4, // লোগোর সাইজ কিছুটা ছোট করা হয়েছে যাতে সুন্দর লাগে
+                  "assets/images/app_icon.png",
+                  width: size.width * 0.4,
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) => const Text(
                     "﷽",
@@ -122,10 +121,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 child: Text(
                   _loadingMessage,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12,
-                  ),
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ),
             ],

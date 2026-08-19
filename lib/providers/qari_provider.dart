@@ -24,7 +24,8 @@ class QariProvider with ChangeNotifier {
   void _loadSavedQari() async {
     final prefs = await SharedPreferences.getInstance();
     _selectedQariId = prefs.getString('qari_id') ?? 'ar.alafasy';
-    _selectedQariName = prefs.getString('qari_name') ?? 'Mishary Rashid Alafasy';
+    _selectedQariName =
+        prefs.getString('qari_name') ?? 'Mishary Rashid Alafasy';
     notifyListeners();
   }
 }

@@ -17,22 +17,21 @@ class BookmarkProvider extends ChangeNotifier {
       String? encodedData = prefs.getString('saved_bookmarks');
       if (encodedData != null) {
         _bookmarks = List<Map<String, dynamic>>.from(json.decode(encodedData));
-        print("Loaded ${_bookmarks.length} bookmarks");
+        // debugdebugPrint("Loaded ${_bookmarks.length} bookmarks");
       }
       notifyListeners();
     } catch (e) {
-      print("Error loading bookmarks: $e");
+      // debugdebugPrint("Error loading bookmarks: $e");
       _bookmarks = [];
     }
   }
 
   Future<void> toggleBookmark(Map<String, dynamic> ayah) async {
-    // ডিবাগging
-    print(
-      "Toggling bookmark: ${ayah['surahName']} - Ayah ${ayah['numberInSurah']}",
-    );
+    // debugdebugPrint(
+    //   "Toggling bookmark: ${ayah['surahName']} - Ayah ${ayah['numberInSurah']}",
+    // );
 
-    // ইউনিক আইডি বের করা
+    /// unique id search
     String surahName = ayah['surahName'] ?? '';
     int? numberInSurah =
         ayah['numberInSurah'] ?? ayah['ayahNumber'] ?? ayah['id'];
@@ -46,13 +45,13 @@ class BookmarkProvider extends ChangeNotifier {
 
     if (index >= 0) {
       _bookmarks.removeAt(index);
-      print("Bookmark removed");
+      // debugdebugPrint("Bookmark removed");
     } else {
       // নিশ্চিত করা যে সব ফিল্ড আছে
       Map<String, dynamic> bookmarkData = {
         'surahName': surahName,
         'numberInSurah': numberInSurah,
-        'ayahNumber': numberInSurah, // ✅ এখানে সংশোধন করা হয়েছে
+        'ayahNumber': numberInSurah,
         'id': ayah['id'] ?? numberInSurah,
         'number': ayah['number'] ?? numberInSurah,
         'text': ayah['text'] ?? ayah['arabic'] ?? '',
@@ -63,7 +62,7 @@ class BookmarkProvider extends ChangeNotifier {
       };
 
       _bookmarks.add(bookmarkData);
-      print("Bookmark added");
+      // debugdebugPrint("Bookmark added");
     }
 
     notifyListeners();
@@ -75,7 +74,7 @@ class BookmarkProvider extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       prefs.setString('saved_bookmarks', json.encode(_bookmarks));
     } catch (e) {
-      print("Error saving bookmarks: $e");
+      // debugdebugPrint("Error saving bookmarks: $e");
     }
   }
 
@@ -102,6 +101,6 @@ class BookmarkProvider extends ChangeNotifier {
     _bookmarks.clear();
     notifyListeners();
     await _saveBookmarks();
-    print("All bookmarks cleared");
+    // debugdebugPrint("All bookmarks cleared");
   }
 }

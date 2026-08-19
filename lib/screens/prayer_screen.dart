@@ -23,14 +23,12 @@ class _PrayerScreenState extends State<PrayerScreen> {
   @override
   void initState() {
     super.initState();
-
-    // ১. অ্যাপের ফ্রেম পুরোপুরি তৈরি হওয়ার পর ডাটা লোড শুরু হবে
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadData();
     });
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_prayerTimes != null && mounted) { // mounted চেক করা নিরাপদ
+      if (_prayerTimes != null && mounted) {
         _updateCounter();
       }
     });
@@ -45,7 +43,6 @@ class _PrayerScreenState extends State<PrayerScreen> {
     } else {
       final nextP = _prayerTimes!.nextPrayer();
       if (nextP == Prayer.none) {
-        // ইশার পর নেক্সট প্রেয়ার হবে পরের দিনের ফজর
         target = _prayerTimes!.fajr.add(const Duration(days: 1));
       } else {
         target = _prayerTimes!.timeForPrayer(nextP);
@@ -68,23 +65,19 @@ class _PrayerScreenState extends State<PrayerScreen> {
           _prayerTimes = data;
         });
         _updateCounter();
-
-        // ডিবাগ করার জন্য প্রিন্ট করুন
-        print("🕐 Fajr: ${data.fajr}");
-        print("🕐 Sunrise: ${data.sunrise}");
-        print("🕐 Dhuhr: ${data.dhuhr}");
-        print("🕐 Asr: ${data.asr}");
-        print("🕐 Maghrib: ${data.maghrib}");
-        print("🕐 Isha: ${data.isha}");
+        // debugPrint("Fajr: ${data.fajr}");
+        // debugPrint("Sunrise: ${data.sunrise}");
+        // debugPrint("Dhuhr: ${data.dhuhr}");
+        // debugPrint("Asr: ${data.asr}");
+        // debugPrint("Maghrib: ${data.maghrib}");
+        // debugPrint("Isha: ${data.isha}");
       } else {
-        // ডাটা না পেলে লোডিং চালু রাখবেন না
         setState(() {
           _prayerTimes = null;
         });
       }
     } catch (e) {
-      print("❌ Error loading prayer times: $e");
-      // এরর হলে লোডিং বন্ধ করুন
+      // debugPrint("Error loading prayer times: $e");
       setState(() {
         _prayerTimes = null;
       });
@@ -109,8 +102,6 @@ class _PrayerScreenState extends State<PrayerScreen> {
     }
 
     final pt = _prayerTimes!;
-
-    // ওপরের ডিসপ্লে নাম ও সময়ের লজিক
     String displayName;
     DateTime displayTime;
 
@@ -148,12 +139,11 @@ class _PrayerScreenState extends State<PrayerScreen> {
 
       body: Column(
         children: [
-          // ১. টপ সেকশন (গ্যাপ কম এবং ওভারল্যাপ প্রোটেকশনসহ)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             child: Column(
               children: [
-                const SizedBox(height: 10,),
+                const SizedBox(height: 10),
                 Text(
                   displayName,
                   style: const TextStyle(
@@ -181,7 +171,7 @@ class _PrayerScreenState extends State<PrayerScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF81C784).withOpacity(0.1),
+                    color: const Color(0xFF81C784).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Text(
@@ -200,14 +190,12 @@ class _PrayerScreenState extends State<PrayerScreen> {
             ),
           ),
 
-          // ২. নিচের স্ক্রলেবল সেকশন
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
                   const SizedBox(height: 10),
-                  // সেহরি ও ইফতার কার্ড
                   Row(
                     children: [
                       _fastCard("SEHRI ENDS", pt.fajr, Icons.wb_twilight),
@@ -216,7 +204,6 @@ class _PrayerScreenState extends State<PrayerScreen> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  // প্রেয়ার গ্রিড
                   GridView.count(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ViewModeProvider with ChangeNotifier {
-  // ০ = Both (আরবী ও অনুবাদ), ১ = Arabic Only (শুধু আরবী), ২ = Translation Only (শুধু অনুবাদ)
+  /// ০ = Both (arabic and arabic translation), ১ = Arabic Only (arabic), ২ = Translation Only (only arabic)
   int _mode = 0;
   int get mode => _mode;
 
@@ -10,7 +10,7 @@ class ViewModeProvider with ChangeNotifier {
     _loadViewMode();
   }
 
-  // ইউজার অপশন চেঞ্জ করলে এটি কল হবে
+  /// when user option change for view
   void setViewMode(int newMode) async {
     _mode = newMode;
     notifyListeners();
@@ -18,7 +18,7 @@ class ViewModeProvider with ChangeNotifier {
     await prefs.setInt('quran_view_mode', newMode);
   }
 
-  // অ্যাপ ওপেন হলে আগের সেভ করা ডাটা লোড হবে
+  /// when app open previous data load
   void _loadViewMode() async {
     final prefs = await SharedPreferences.getInstance();
     _mode = prefs.getInt('quran_view_mode') ?? 0;

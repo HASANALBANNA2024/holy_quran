@@ -15,8 +15,7 @@ class BookmarksScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           "Bookmarks",
-          style: TextStyle(
-              fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
@@ -69,7 +68,6 @@ class BookmarksScreen extends StatelessWidget {
     );
   }
 
-  // যদি কোনো বুকমার্ক না থাকে
   Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
@@ -78,7 +76,7 @@ class BookmarksScreen extends StatelessWidget {
           Icon(
             Icons.bookmark_border_rounded,
             size: 80,
-            color: Colors.grey.withOpacity(0.4),
+            color: Colors.grey.withValues(alpha: 0.4),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -95,7 +93,7 @@ class BookmarksScreen extends StatelessWidget {
     );
   }
 
-  // ইমেজ অনুযায়ী কার্ড ডিজাইন (null-safe)
+  ///card design (null-safe)
   Widget _buildBookmarkCard(
     BuildContext context,
     Map<String, dynamic> ayah,
@@ -103,7 +101,7 @@ class BookmarksScreen extends StatelessWidget {
   ) {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // null-check করে ডিফল্ট ভ্যালু সেট করা
+    /// null-check default value set
     String surahName = ayah['surahName'] ?? 'Unknown';
     int? numberInSurah =
         ayah['numberInSurah'] ?? ayah['ayahNumber'] ?? ayah['id'];
@@ -114,8 +112,7 @@ class BookmarksScreen extends StatelessWidget {
     String arabicText = ayah['text'] ?? ayah['arabic'] ?? '';
     String translationText = ayah['translation'] ?? ayah['trans'] ?? '';
 
-    // ডিবাগging: কনসোলে বুকমার্ক ডাটা দেখা
-    print("Building bookmark card: ${ayah.toString()}");
+    /// debugdebugPrint("Building bookmark card: ${ayah.toString()}");
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -125,7 +122,7 @@ class BookmarksScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -137,7 +134,7 @@ class BookmarksScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // সূরার নাম ও নম্বর
+              /// surah name and number
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,14 +149,11 @@ class BookmarksScreen extends StatelessWidget {
                         fontSize: 16,
                       ),
                     ),
-                    // const Text(
-                    //   "Translation included",
-                    //   style: TextStyle(color: Colors.grey, fontSize: 12),
-                    // ),
                   ],
                 ),
               ),
-              // বুকমার্ক রিমুভ বাটন
+
+              /// bookmark remove  ব
               IconButton(
                 icon: const Icon(
                   Icons.bookmark_rounded,
@@ -171,7 +165,6 @@ class BookmarksScreen extends StatelessWidget {
           ),
           const Divider(height: 20, color: Colors.white10),
 
-          // আরবি টেক্সট (যদি থাকে)
           if (arabicText.isNotEmpty)
             Text(
               arabicText,
@@ -183,11 +176,11 @@ class BookmarksScreen extends StatelessWidget {
               ),
             )
           else
-            const SizedBox(height: 20), // আরবি টেক্সট না থাকলে স্পেস
+            const SizedBox(height: 20),
 
           const SizedBox(height: 12),
 
-          // অনুবাদ টেক্সট (যদি থাকে)
+          /// translation text only
           if (translationText.isNotEmpty)
             Text(
               translationText,

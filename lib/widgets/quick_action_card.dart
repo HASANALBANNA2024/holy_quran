@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:holy_quran/screens/bookmark_screen.dart';
-import 'package:holy_quran/screens/donation_screen.dart';
 import 'package:holy_quran/screens/prayer_screen.dart';
-import 'package:holy_quran/screens/qibla_screen.dart';
 import 'package:holy_quran/screens/tasbih_screen.dart';
 
 class QuickActionCard extends StatelessWidget {
@@ -19,8 +17,9 @@ class QuickActionCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            SizedBox(width: 5,),
-            // qibla screen
+            SizedBox(width: 5),
+
+            /// Tasbih Screen
             _buildIconButton(
               icon: Icons.fingerprint,
               label: "Tasbih Counter",
@@ -33,8 +32,7 @@ class QuickActionCard extends StatelessWidget {
               },
             ),
 
-
-            // salah screen
+            /// salah screen
             _buildIconButton(
               icon: Icons.access_time,
               label: "Prayer Times",
@@ -47,7 +45,7 @@ class QuickActionCard extends StatelessWidget {
               },
             ),
 
-            // bookmark
+            /// bookmark
             _buildIconButton(
               icon: Icons.bookmark,
               label: "Bookmark",
@@ -59,8 +57,6 @@ class QuickActionCard extends StatelessWidget {
                 );
               },
             ),
-
-
           ],
         ),
       ),
@@ -83,7 +79,7 @@ Widget _buildIconButton({
           Container(
             padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 24),

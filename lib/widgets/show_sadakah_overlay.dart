@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:holy_quran/screens/donation_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void showSadakahOverlay(BuildContext context, String currentLang, List<dynamic> translations) {
-  String lang = (currentLang == null || currentLang.isEmpty) ? "en" : currentLang;
+void showSadakahOverlay(
+  BuildContext context,
+  String currentLang,
+  List<dynamic> translations,
+) {
+  String lang = (currentLang.isEmpty) ? "en" : currentLang;
   String ayatTranslation = "";
 
   String title = lang == "bn" ? "সাদাকাহ জারিয়া" : "Sadaqah Jariyah";
@@ -28,7 +32,6 @@ void showSadakahOverlay(BuildContext context, String currentLang, List<dynamic> 
       contentPadding: EdgeInsets.zero,
       content: Container(
         width: MediaQuery.of(context).size.width * 0.9,
-        // কার্ডের হাইট কন্ট্রোল করতে constraints ব্যবহার করা হয়েছে
         constraints: const BoxConstraints(maxHeight: 450),
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
@@ -38,43 +41,55 @@ void showSadakahOverlay(BuildContext context, String currentLang, List<dynamic> 
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          border: Border.all(color: Colors.amber.withOpacity(0.5), width: 1.5),
+          border: Border.all(
+            color: Colors.amber.withValues(alpha: 0.5),
+            width: 1.5,
+          ),
         ),
         child: Stack(
           children: [
-            // ১. ব্যাকগ্রাউন্ড ওয়াটারমার্ক থিম (গাছের আইকনগুলো ব্যাকগ্রাউন্ডে থাকবে)
             Positioned(
               right: -20,
               bottom: -20,
-              child: Icon(Icons.park_rounded, size: 200, color: Colors.white.withOpacity(0.05)),
+              child: Icon(
+                Icons.park_rounded,
+                size: 200,
+                color: Colors.white.withValues(alpha: 0.05),
+              ),
             ),
             Positioned(
               left: -10,
               top: 20,
-              child: Icon(Icons.spa, size: 100, color: Colors.white.withOpacity(0.03)),
+              child: Icon(
+                Icons.spa,
+                size: 100,
+                color: Colors.white.withValues(alpha: 0.03),
+              ),
             ),
 
             // ২. মেইন কন্টেন্ট
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
-                mainAxisSize: MainAxisSize.min, // হাইট ছোট রাখার জন্য
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  // ছোট আইকন উপরে
-                  const Icon(Icons.volunteer_activism, color: Colors.amber, size: 40),
+                  const Icon(
+                    Icons.volunteer_activism,
+                    color: Colors.amber,
+                    size: 40,
+                  ),
                   const SizedBox(height: 12),
                   Text(
                     title,
                     style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.amber,
-                        letterSpacing: 1.2
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.amber,
+                      letterSpacing: 1.2,
                     ),
                   ),
                   const SizedBox(height: 20),
 
-                  // আয়াত বক্স
                   Flexible(
                     child: SingleChildScrollView(
                       child: Column(
@@ -94,9 +109,9 @@ void showSadakahOverlay(BuildContext context, String currentLang, List<dynamic> 
                           Text(
                             refText,
                             style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.amber.shade200,
-                                fontWeight: FontWeight.bold
+                              fontSize: 12,
+                              color: Colors.amber.shade200,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
@@ -106,68 +121,88 @@ void showSadakahOverlay(BuildContext context, String currentLang, List<dynamic> 
 
                   const SizedBox(height: 30),
 
-                  // ৩. বাটন রো (Donate আগে, Later পরে)
                   Row(
                     children: [
-                      // Donate Button (বামে)
+                      // Donate Button
                       Expanded(
-                        flex: 1, // আগে ২ ছিল, এখন ১ করাতে দুই বাটন সমান সাইজ হবে
+                        flex: 1,
                         child: ElevatedButton(
                           onPressed: () async {
                             final prefs = await SharedPreferences.getInstance();
                             // Ajker date save kora (21 din porer jonno)
-                            await prefs.setString('last_sadakah_action', DateTime.now().toString());
+                            await prefs.setString(
+                              'last_sadakah_action',
+                              DateTime.now().toString(),
+                            );
                             await prefs.setInt('next_show_days', 20);
-
+                            if (!context.mounted) return;
                             Navigator.pop(context);
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => DonationScreen()));
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => DonationScreen(),
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.amber,
                             foregroundColor: const Color(0xFF004D40),
                             padding: const EdgeInsets.symmetric(vertical: 15),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
                             elevation: 5,
                           ),
                           child: Text(
                             btnText,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                            maxLines: 1, // লেখা বড় হলে যেন ভেঙে না যায়
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                            maxLines: 1,
                           ),
                         ),
                       ),
                       const SizedBox(width: 12),
 
-                      // Maybe Later Button (ডানে)
+                      // Maybe Later Button
                       Expanded(
-                        flex: 1, // সমান সাইজ রাখার জন্য ১
+                        flex: 1,
                         child: TextButton(
-                          onPressed: () async{
+                          onPressed: () async {
                             final prefs = await SharedPreferences.getInstance();
                             // Ajker date save kora (7 din porer jonno)
-                            await prefs.setString('last_sadakah_action', DateTime.now().toString());
+                            await prefs.setString(
+                              'last_sadakah_action',
+                              DateTime.now().toString(),
+                            );
                             await prefs.setInt('next_show_days', 5);
-
+                            if (!context.mounted) return;
                             Navigator.pop(context);
-
                           },
                           style: TextButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 15),
-                            backgroundColor: Colors.white.withOpacity(0.1),
+                            backgroundColor: Colors.white.withValues(
+                              alpha: 0.1,
+                            ),
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                                side: const BorderSide(color: Colors.white24)
+                              borderRadius: BorderRadius.circular(15),
+                              side: const BorderSide(color: Colors.white24),
                             ),
                           ),
                           child: Text(
                             skipText,
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
                             maxLines: 1,
                           ),
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

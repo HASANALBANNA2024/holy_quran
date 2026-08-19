@@ -1,5 +1,3 @@
-// lib/providers/notification_provider.dart
-
 import 'package:flutter/material.dart';
 
 class NotificationModel {
@@ -23,7 +21,7 @@ class NotificationModel {
     this.isRead = false,
   });
 
-  // JSON serialization এর জন্য
+  // JSON serialization
   Map<String, dynamic> toJson() => {
     'id': id,
     'category': category,
@@ -35,20 +33,21 @@ class NotificationModel {
     'isRead': isRead,
   };
 
-  factory NotificationModel.fromJson(Map<String, dynamic> json) => NotificationModel(
-    id: json['id'],
-    category: json['category'],
-    text: json['text'],
-    surahName: json['surahName'],
-    surahIndex: json['surahIndex'],
-    ayahNumber: json['ayahNumber'],
-    time: DateTime.parse(json['time']),
-    isRead: json['isRead'],
-  );
+  factory NotificationModel.fromJson(Map<String, dynamic> json) =>
+      NotificationModel(
+        id: json['id'],
+        category: json['category'],
+        text: json['text'],
+        surahName: json['surahName'],
+        surahIndex: json['surahIndex'],
+        ayahNumber: json['ayahNumber'],
+        time: DateTime.parse(json['time']),
+        isRead: json['isRead'],
+      );
 }
 
 class NotificationProvider extends ChangeNotifier {
-  List<NotificationModel> _list = [];
+  final List<NotificationModel> _list = [];
 
   List<NotificationModel> get list => List.unmodifiable(_list);
   int get unreadCount => _list.where((n) => !n.isRead).length;

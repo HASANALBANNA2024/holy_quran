@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:holy_quran/screens/surah_detail_screen.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/quran_provider.dart';
 
 class QuranSearch extends SearchDelegate {
-  static List<Map<String, dynamic>> _searchHistory = [];
-  static Map<int, int> _searchCountMap = {};
-  static List<Map<String, dynamic>> _popularSurahs = [];
+  static final List<Map<String, dynamic>> _searchHistory = [];
+  static final Map<int, int> _searchCountMap = {};
+  static final List<Map<String, dynamic>> _popularSurahs = [];
 
   @override
   String get searchFieldLabel => "Search Surah or Ayah...";
@@ -76,16 +77,16 @@ class QuranSearch extends SearchDelegate {
 
     final searchTerm = query.toLowerCase().trim();
 
-    // ১. সূরা ফিল্টার (আগের লজিক)
+    /// Filter logic of surah
     final surahResults = quran.surahs.where((surah) {
       final enName = (surah['englishName'] ?? '').toString().toLowerCase();
       final arName = (surah['name'] ?? '').toString();
       return enName.contains(searchTerm) || arName.contains(searchTerm);
     }).toList();
 
-    // ২. আয়াতের ভেতর ফিল্টার (ইউজারের সিলেক্ট করা ল্যাঙ্গুয়েজ অনুযায়ী)
+    /// ayah filter
     List<Map<String, dynamic>> ayahResults = [];
-    final currentTranslations = quran.translations; // প্রোভাইডার থেকে বর্তমান অনুবাদ
+    final currentTranslations = quran.translations;
 
     for (var surah in currentTranslations) {
       final List ayahs = surah['ayahs'] ?? [];
@@ -128,11 +129,15 @@ class QuranSearch extends SearchDelegate {
     );
   }
 
-  // আয়াতের জন্য আলাদা টাইল উইজেট
+  /// ayah widgets
   Widget _buildAyahTile(BuildContext context, Map<String, dynamic> ayah) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      leading: const Icon(Icons.format_align_left, color: Color(0xFF81C784), size: 18),
+      leading: const Icon(
+        Icons.format_align_left,
+        color: Color(0xFF81C784),
+        size: 18,
+      ),
       title: Text(
         ayah['text'],
         maxLines: 2,
@@ -159,7 +164,7 @@ class QuranSearch extends SearchDelegate {
     );
   }
 
-  // আপনার আগের বাকি ফাংশনগুলো (_buildHome, _buildSectionTitle, _buildTile) এখানে হুবহু থাকবে
+  /// all function (_buildHome, _buildSectionTitle, _buildTile)
   Widget _buildHome(BuildContext context) {
     return StatefulBuilder(
       builder: (context, setState) {
@@ -175,13 +180,14 @@ class QuranSearch extends SearchDelegate {
                 },
               ),
               ..._searchHistory.map(
-                    (surah) => _buildTile(context, surah, onSearch: () => setState(() {})),
+                (surah) =>
+                    _buildTile(context, surah, onSearch: () => setState(() {})),
               ),
             ],
             if (_popularSurahs.isNotEmpty) ...[
               _buildSectionTitle("Popular Surahs"),
               ..._popularSurahs.map(
-                    (surah) => _buildTile(context, surah, isPopular: true),
+                (surah) => _buildTile(context, surah, isPopular: true),
               ),
             ],
           ],
@@ -196,18 +202,37 @@ class QuranSearch extends SearchDelegate {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: const TextStyle(color: Color(0xFF81C784), fontWeight: FontWeight.bold, fontSize: 13)),
+          Text(
+            title,
+            style: const TextStyle(
+              color: Color(0xFF81C784),
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+            ),
+          ),
           if (onClear != null)
             InkWell(
               onTap: onClear,
-              child: const Text("Clear All", style: TextStyle(color: Colors.white38, fontSize: 12, decoration: TextDecoration.underline)),
+              child: const Text(
+                "Clear All",
+                style: TextStyle(
+                  color: Colors.white38,
+                  fontSize: 12,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
             ),
         ],
       ),
     );
   }
 
-  Widget _buildTile(BuildContext context, Map<String, dynamic> surah, {bool isPopular = false, VoidCallback? onSearch}) {
+  Widget _buildTile(
+    BuildContext context,
+    Map<String, dynamic> surah, {
+    bool isPopular = false,
+    VoidCallback? onSearch,
+  }) {
     final int surahId = surah['number'] ?? 0;
     final String enName = surah['englishName'] ?? 'Unknown';
     final int totalAyahs = surah['numberOfAyahs'] ?? 0;
@@ -217,12 +242,32 @@ class QuranSearch extends SearchDelegate {
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       leading: CircleAvatar(
         radius: 18,
-        backgroundColor: const Color(0xFF81C784).withOpacity(0.1),
-        child: Text("$surahId", style: const TextStyle(color: Color(0xFF81C784), fontSize: 12, fontWeight: FontWeight.bold)),
+        backgroundColor: const Color(0xFF81C784).withValues(alpha: 0.1),
+        child: Text(
+          "$surahId",
+          style: const TextStyle(
+            color: Color(0xFF81C784),
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
-      title: Text(enName, style: const TextStyle(color: Colors.white, fontSize: 16)),
-      subtitle: Text('$totalAyahs Ayahs', style: const TextStyle(color: Colors.white38, fontSize: 12)),
-      trailing: Text(arName, style: const TextStyle(color: Color(0xFF81C784), fontSize: 18, fontWeight: FontWeight.bold)),
+      title: Text(
+        enName,
+        style: const TextStyle(color: Colors.white, fontSize: 16),
+      ),
+      subtitle: Text(
+        '$totalAyahs Ayahs',
+        style: const TextStyle(color: Colors.white38, fontSize: 12),
+      ),
+      trailing: Text(
+        arName,
+        style: const TextStyle(
+          color: Color(0xFF81C784),
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       onTap: () {
         _searchCountMap[surahId] = (_searchCountMap[surahId] ?? 0) + 1;
         if (_searchCountMap[surahId] == 3) {

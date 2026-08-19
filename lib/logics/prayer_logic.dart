@@ -1,75 +1,75 @@
 import 'dart:async';
 
 import 'package:adhan/adhan.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 class PrayerLogic {
   static Future<PrayerTimes?> getPrayerTimes() async {
     try {
-      // ১. পারমিশন চেক করুন
+      /// permission check
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        print("📍 Location service is disabled");
-        // লোকেশন সার্ভিস বন্ধ থাকলে ঢাকার টাইম দেখান
+        // debugPrint("Location service is disabled");
+
+        /// if location service of then location track to dhaka
         return _getDefaultDhakaTime();
       }
-
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          print("📍 Location permission denied");
+          // debugPrint("Location permission denied");
           return _getDefaultDhakaTime();
         }
       }
-
       if (permission == LocationPermission.deniedForever) {
-        print("📍 Location permission permanently denied");
+        // debugPrint(" Location permission permanently denied");
         return _getDefaultDhakaTime();
       }
 
-      // ২. টাইমআউট সহ লোকেশন নিন
+      /// location with timeout
       Position position =
           await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.low, // Low দ্রুত কাজ করে
-            timeLimit: const Duration(seconds: 5), // ৫ সেকেন্ডের বেশি না
+            locationSettings: const LocationSettings(
+              accuracy: LocationAccuracy.low,
+              timeLimit: Duration(seconds: 5),
+            ),
           ).timeout(
             const Duration(seconds: 5),
             onTimeout: () {
-              print("📍 Location timeout - using default");
+              debugPrint("📍 Location timeout - using default");
               throw TimeoutException('Location timeout');
             },
           );
 
-      print("📍 Location: ${position.latitude}, ${position.longitude}");
+      debugPrint("📍 Location: ${position.latitude}, ${position.longitude}");
 
       final coordinates = Coordinates(position.latitude, position.longitude);
 
-      // বাংলাদেশ ও এশিয়ার জন্য করাচি মেথড
+      /// bangladesh and asia
       final params = CalculationMethod.karachi.getParameters();
       params.madhab = Madhab.hanafi;
 
-      // অ্যাডজাস্টমেন্ট যোগ করুন (বাংলাদেশের জন্য)
       params.adjustments = PrayerAdjustments(
-        fajr: 4, // ফজর +৪ মিনিট
+        fajr: 4,
         sunrise: 0,
         dhuhr: 0,
         asr: 0,
-        maghrib: 2, // মাগরিব +২ মিনিট
-        isha: 4, // ইশা +৪ মিনিট
+        maghrib: 2,
+        isha: 4,
       );
 
       return PrayerTimes.today(coordinates, params);
     } catch (e) {
-      print("❌ Error getting prayer times: $e");
-      // কোনো এরর হলে ঢাকার টাইম দেখান
+      // debugPrint("Error getting prayer times:$e");
       return _getDefaultDhakaTime();
     }
   }
 
-  // ডিফল্ট ঢাকার টাইম
   static PrayerTimes _getDefaultDhakaTime() {
-    print("📍 Using default Dhaka time");
+    // debugPrint("Using default Dhaka time");
     final dhaka = Coordinates(23.8103, 90.4125);
     final params = CalculationMethod.karachi.getParameters();
     params.madhab = Madhab.hanafi;
@@ -86,7 +86,6 @@ class PrayerLogic {
 
     final remaining = targetTime.difference(now);
 
-    // নেগেটিভ টাইম হলে ০০:০০:০০ দেখান
     if (remaining.isNegative) {
       return "00:00:00";
     }

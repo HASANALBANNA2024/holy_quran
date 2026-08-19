@@ -4,17 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class PaymentService {
-  // Payoneer API Credentials (আপনার আসল credentials দিন)
   static const String _payoneerApiKey = "YOUR_PAYONEER_API_KEY";
   static const String _payoneerSecretKey = "YOUR_PAYONEER_SECRET_KEY";
   static const String _payoneerProgramId = "YOUR_PROGRAM_ID";
 
-  // পেমেন্ট স্ট্যাটাস ট্র্যাক করার জন্য callback
   final Function(String status, String message)? onPaymentUpdate;
 
   PaymentService({this.onPaymentUpdate});
 
-  // 1️⃣ Payoneer পেমেন্ট প্রসেস
   Future<Map<String, dynamic>> processPayoneerPayment({
     required double amount,
     required String currency,
@@ -30,7 +27,6 @@ class PaymentService {
         'https://api.payoneer.com/v2/programs/$_payoneerProgramId/payments',
       );
 
-      // পেমেন্ট ডেটা
       final paymentData = {
         'amount': amount,
         'currency': currency,
@@ -74,7 +70,6 @@ class PaymentService {
     }
   }
 
-  // 2️⃣ Visa/Mastercard Card পেমেন্ট (Stripe দিয়ে)
   Future<Map<String, dynamic>> processCardPayment({
     required double amount,
     required String currency,
@@ -89,10 +84,8 @@ class PaymentService {
     try {
       onPaymentUpdate?.call('processing', 'Card payment processing...');
 
-      // Stripe API (Payoneer card processing এর জন্য)
       final url = Uri.parse('https://api.stripe.com/v1/payment_intents');
 
-      // পেমেন্ট ইন্টেন্ট তৈরি
       final paymentIntent = await http.post(
         url,
         headers: {
@@ -100,7 +93,7 @@ class PaymentService {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: {
-          'amount': (amount * 100).toInt().toString(), // cent এ কনভার্ট
+          'amount': (amount * 100).toInt().toString(),
           'currency': currency.toLowerCase(),
           'payment_method_types[]': 'card',
           'description': 'Donation - $orderId',
@@ -112,7 +105,6 @@ class PaymentService {
       if (paymentIntent.statusCode == 200) {
         final intentData = json.decode(paymentIntent.body);
 
-        // কার্ড পেমেন্ট কনফার্ম
         final confirmPayment = await http.post(
           Uri.parse(
             'https://api.stripe.com/v1/payment_intents/${intentData['id']}/confirm',
@@ -161,7 +153,6 @@ class PaymentService {
     }
   }
 
-  // 3️⃣ পেমেন্ট স্ট্যাটাস চেক
   Future<Map<String, dynamic>> checkPaymentStatus(String transactionId) async {
     try {
       final url = Uri.parse(
@@ -190,7 +181,6 @@ class PaymentService {
     }
   }
 
-  // 4️⃣ ওয়েবহুক হ্যান্ডলার (সার্ভার থেকে callback)
   void handleWebhook(String payload) {
     try {
       final data = json.decode(payload);
